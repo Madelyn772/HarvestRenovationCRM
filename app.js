@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { portalConfig } from './config.js';
 
-const config = window.PORTAL_CONFIG || {};
+const config = portalConfig || {};
 const state = {
   supabase: null,
   session: null,
@@ -115,15 +116,15 @@ async function bootstrap() {
   captureElements();
   bindBaseEvents();
 
-  const missingConfig = !config.supabaseUrl || !config.supabaseAnonKey;
+  const missingConfig = !config.supabaseUrl || !config.supabasePublishableKey;
   if (missingConfig) {
-    setSetupBanner('Setup required: add your Supabase URL and anon key in config.js before using this portal.');
+    setSetupBanner('Setup required: add your Supabase URL and publishable key in config.js before using this portal.');
     showAuthMessage('This bundle is production-ready, but it still needs your live Supabase project credentials in config.js.', 'info');
     showShell('auth');
     return;
   }
 
-  state.supabase = createClient(config.supabaseUrl, config.supabaseAnonKey, {
+  state.supabase = createClient(config.supabaseUrl, config.supabasePublishableKey, {
     auth: {
       autoRefreshToken: true,
       persistSession: true,

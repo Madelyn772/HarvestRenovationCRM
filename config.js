@@ -1,8 +1,8 @@
-window.PORTAL_CONFIG = {
+export const portalConfig = {
   supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
-  supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
+  supabasePublishableKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjdGxrdm1xeGdrdXdvdGRrZHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0MjAyOTQsImV4cCI6MjA5NDk5NjI5NH0.1UWfUO_4YfCJFkHCkF3SpBptF0FVH8sbXgh3KqSiwek',
   companyCalendarName: 'Harvest Renovation Company Calendar',
-  companyCalendarEmbedUrl: 'https://calendar.google.com/calendar/embed?src=YOUR_SHARED_CALENDAR_ID&ctz=America%2FChicago',
+  companyCalendarEmbedUrl: 'https://calendar.google.com/calendar/embed?src=harvestrenovation%40gmail.com&ctz=America%2FChicago',
   bootstrapUsers: [
     {
       email: 'contactmpuentes@gmail.com',
