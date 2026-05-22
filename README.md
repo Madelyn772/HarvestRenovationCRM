@@ -1,4 +1,4 @@
-This project is the company website for Harvest Renovation, providing customers with information about our services. Visitors can request estimates, view project photos, and contact us for more details.
+This project is the CRM that also manages customer estimates, proposals, and project tracking.
 
 Key Commands:
 
