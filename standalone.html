@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harvest Renovation Portal Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+:root {
+  --bg: #f6f3ee;
+  --bg-alt: #efe8de;
+  --surface: #ffffff;
+  --surface-soft: #fbf8f3;
+  --surface-warm: #fff5e8;
+  --line: #e7ddd0;
+  --line-strong: #d8c8b5;
+  --text: #1e1a16;
+  --muted: #6e655b;
+  --brand: #bc6b30;
+  --brand-dark: #924b1e;
+  --brand-soft: #f8e6d4;
+  --dark: #171310;
+  --dark-soft: #241f1b;
+  --blue: #295ea7;
+  --blue-soft: #eaf1fe;
+  --green: #177b4e;
+  --green-soft: #e8f6ee;
+  --yellow: #8f6510;
+  --yellow-soft: #fff5d8;
+  --red: #a34537;
+  --red-soft: #fdece8;
+  --purple: #6b46c8;
+  --purple-soft: #f1ecff;
+  --radius: 24px;
+  --radius-md: 18px;
+  --radius-sm: 14px;
+  --shadow-sm: 0 10px 24px rgba(28, 22, 16, 0.06);
+  --shadow: 0 22px 56px rgba(28, 22, 16, 0.08);
+  --focus: 0 0 0 4px rgba(188, 107, 48, 0.15);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body { margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 241, 223, 0.85) 0%, rgba(255,255,255,0) 34%),
+    linear-gradient(180deg, #faf7f1 0%, #f3ede4 100%);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.hidden { display: none !important; }
+.full-width { width: 100%; }
+
+.setup-banner {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  padding: 14px 18px;
+  background: #2b1a10;
+  color: #fff3e2;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+  font-weight: 600;
+}
+
+.auth-shell,
+.pending-shell {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(320px, 460px) minmax(320px, 460px);
+  justify-content: center;
+  align-content: center;
+  gap: 22px;
+  padding: 28px;
+}
+
+.auth-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 220, 185, 0.46), transparent 30%),
+    radial-gradient(circle at 80% 16%, rgba(255,255,255,0.75), transparent 25%),
+    linear-gradient(135deg, rgba(35, 27, 22, 0.95), rgba(19, 15, 12, 0.95));
+  z-index: 0;
+}
+
+.auth-card,
+.pending-card {
+  position: relative;
+  z-index: 1;
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: var(--shadow);
+}
+
+.auth-card {
+  background: rgba(255,255,255,0.92);
+  padding: 26px;
+}
+
+.auth-brand-card {
+  background:
+    radial-gradient(circle at top right, rgba(241, 181, 124, 0.28), transparent 28%),
+    linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+  color: #fff;
+  border-color: rgba(255,255,255,0.14);
+  backdrop-filter: blur(18px);
+}
+.auth-brand-card .muted { color: rgba(255,255,255,0.72); }
+.auth-brand-card .brand-mark { margin-bottom: 22px; }
+.auth-brand-card h1 {
+  margin: 0 0 10px;
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  line-height: 1.05;
+}
+.auth-copy { max-width: 38ch; line-height: 1.6; }
+.auth-points {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+}
+.auth-point {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.auth-point strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.auth-point span {
+  color: rgba(255,255,255,0.8);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.pending-shell {
+  grid-template-columns: minmax(320px, 520px);
+}
+.pending-card {
+  background: rgba(255,255,255,0.94);
+  padding: 30px;
+  text-align: center;
+}
+.pending-card .brand-mark { margin: 0 auto 20px; }
+.pending-card h2 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+}
+
+.brand-mark {
+  width: 62px;
+  height: 62px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: linear-gradient(135deg, #f1ab66 0%, #b75b21 100%);
+  box-shadow: 0 16px 32px rgba(183, 91, 33, 0.28);
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--brand);
+}
+.auth-brand-card .eyebrow,
+.sidebar .eyebrow { color: #f2b173; }
+.muted { color: var(--muted); }
+.tiny { font-size: 0.83rem; line-height: 1.5; }
+
+.auth-tabs {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 100%;
+  padding: 5px;
+  border-radius: 16px;
+  background: #f4eee7;
+  border: 1px solid var(--line);
+  margin-bottom: 18px;
+}
+.auth-tab {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  border-radius: 12px;
+}
+.auth-tab.active {
+  background: #fff;
+  color: var(--text);
+  box-shadow: 0 8px 18px rgba(26, 18, 10, 0.05);
+}
+
+.auth-message {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  background: var(--surface-soft);
+  line-height: 1.5;
+}
+.auth-message.success {
+  background: var(--green-soft);
+  color: var(--green);
+  border-color: #bde5cb;
+}
+.auth-message.error {
+  background: var(--red-soft);
+  color: var(--red);
+  border-color: #efc5bd;
+}
+.auth-message.info {
+  background: var(--blue-soft);
+  color: var(--blue);
+  border-color: #c9daf9;
+}
+
+.auth-form { display: none; }
+.auth-form.active { display: grid; gap: 14px; }
+.auth-form h2 {
+  margin: 0 0 6px;
+  font-size: 1.7rem;
+}
+.auth-form label,
+.form-grid label {
+  display: grid;
+  gap: 7px;
+}
+.auth-form label span,
+.form-grid label span {
+  font-weight: 700;
+  color: var(--text);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  outline: none;
+}
+textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+input:hover,
+select:hover,
+textarea:hover { border-color: var(--line-strong); }
+input:focus,
+select:focus,
+textarea:focus,
+button:focus-visible {
+  border-color: rgba(188, 107, 48, 0.72);
+  box-shadow: var(--focus);
+  outline: none;
+}
+input[readonly] {
+  background: #f8f4ee;
+  color: #5d554d;
+}
+
+.primary-btn,
+.secondary-btn,
+.ghost-btn,
+.danger-btn,
+.nav-btn {
+  border: 0;
+  border-radius: 14px;
+  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.primary-btn,
+.secondary-btn,
+.ghost-btn,
+.danger-btn {
+  min-height: 44px;
+  padding: 11px 16px;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.primary-btn:hover,
+.secondary-btn:hover,
+.ghost-btn:hover,
+.danger-btn:hover,
+.nav-btn:hover { transform: translateY(-1px); }
+.primary-btn {
+  background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(188, 107, 48, 0.22);
+}
+.secondary-btn {
+  background: linear-gradient(135deg, #2a241f 0%, #171310 100%);
+  color: #fff;
+}
+.ghost-btn {
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.ghost-btn:hover { background: #fffaf4; }
+.danger-btn {
+  background: #fff6f3;
+  color: var(--red);
+  border: 1px solid #efcac1;
+}
+.danger-btn:hover { background: #ffefea; }
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.form-actions.center { justify-content: center; }
+.full { grid-column: 1 / -1; }
+
+.shell {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 26px 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: #fff;
+  background:
+    radial-gradient(circle at top, rgba(239, 171, 106, 0.16), transparent 34%),
+    linear-gradient(180deg, #221d18 0%, #15110f 100%);
+}
+.sidebar .muted { color: rgba(255,255,255,0.7); }
+.brand {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.brand h1 {
+  margin: 0;
+  font-size: 1.12rem;
+  line-height: 1.2;
+}
+
+.sidebar-profile,
+.sidebar-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-profile {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+.profile-label {
+  display: block;
+  margin-bottom: 5px;
+  color: rgba(255,255,255,0.65);
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+.nav-btn {
+  position: relative;
+  width: 100%;
+  padding: 13px 14px;
+  text-align: left;
+  color: rgba(255,255,255,0.88);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.06);
+  font-weight: 650;
+}
+.nav-btn.active,
+.nav-btn:hover {
+  background: linear-gradient(90deg, rgba(242, 177, 115, 0.18), rgba(255,255,255,0.08));
+  border-color: rgba(242, 177, 115, 0.24);
+  color: #fff;
+}
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  inset: 10px auto 10px 0;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f5ba7d 0%, #d26b25 100%);
+}
+
+.mini-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.5;
+}
+
+.main {
+  width: min(100%, 1580px);
+  margin: 0 auto;
+  padding: 28px;
+}
+.topbar {
+  position: sticky;
+  top: 16px;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 22px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
+}
+.topbar h2 {
+  margin: 4px 0 6px;
+  font-size: clamp(1.8rem, 2.5vw, 2.35rem);
+  line-height: 1.08;
+}
+.topbar-chips {
+  display: grid;
+  gap: 10px;
+}
+.chip {
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 10px 24px rgba(29, 22, 16, 0.05);
+}
+.chip span {
+  color: var(--muted);
+  font-size: 0.77rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.chip strong { font-size: 0.98rem; }
+.chip.warm {
+  background: linear-gradient(135deg, #fff8f1 0%, #fff1e0 100%);
+  border-color: #f0d5b8;
+}
+
+.panel { display: none; }
+.panel.active {
+  display: block;
+  animation: panelFade 220ms ease;
+}
+@keyframes panelFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-card,
+.card,
+.stat {
+  background: rgba(255,255,255,0.93);
+  border: 1px solid rgba(231, 221, 208, 0.95);
+  box-shadow: var(--shadow);
+}
+.hero-card,
+.card {
+  border-radius: var(--radius);
+}
+.hero-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 28px;
+  margin-bottom: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(245, 208, 170, 0.32), transparent 32%),
+    linear-gradient(135deg, #fffdfa 0%, #fff6eb 100%);
+}
+.hero-card h3 {
+  margin: 4px 0 10px;
+  max-width: 840px;
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+}
+.hero-card .muted {
+  max-width: 860px;
+  line-height: 1.6;
+}
+.hero-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.stat {
+  position: relative;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 18px;
+}
+.stat::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(188, 107, 48, 0.18), rgba(188, 107, 48, 0.9));
+}
+.stat .label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+}
+.stat .value {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 1.95rem;
+  line-height: 1;
+  font-weight: 800;
+}
+.stat.warm {
+  background: linear-gradient(135deg, #fff9f2 0%, #ffe9cf 100%);
+}
+
+.grid {
+  display: grid;
+  gap: 18px;
+}
+.grid.two { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.grid.two.uneven { grid-template-columns: minmax(430px, 1.08fr) minmax(320px, 0.92fr); }
+.card { padding: 22px; }
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.card-head.tight { margin-bottom: 14px; }
+.card-head h3 {
+  margin: 4px 0 0;
+  font-size: 1.22rem;
+  line-height: 1.25;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  border: 1px solid #efcfb0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.stack {
+  display: grid;
+  gap: 12px;
+}
+.feed-item,
+.request-card,
+.calendar-card {
+  padding: 15px 16px;
+  border-radius: 18px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, #fff 0%, #fbf8f4 100%);
+}
+.feed-item strong,
+.request-card strong,
+.calendar-card strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.calendar-embed-shell {
+  min-height: 520px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  border: 1px dashed var(--line-strong);
+  background: linear-gradient(180deg, #fff 0%, #fbf8f3 100%);
+  color: var(--muted);
+  padding: 22px;
+}
+.calendar-frame {
+  width: 100%;
+  height: 620px;
+  border: 0;
+  border-radius: 18px;
+  background: #fff;
+}
+.calendar-card .form-actions { margin-top: 12px; }
+.calendar-meta {
+  color: var(--muted);
+  line-height: 1.55;
+}
+.section-divider {
+  height: 1px;
+  margin: 24px 0;
+  background: var(--line);
+}
+
+.request-card {
+  display: grid;
+  gap: 12px;
+}
+.request-meta {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.status-pill::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
+}
+.status-pill.pending {
+  background: var(--yellow-soft);
+  color: var(--yellow);
+}
+.status-pill.active {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.status-pill.denied {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.admin-settings {
+  margin-top: 10px;
+}
+
+@media (max-width: 1240px) {
+  .grid.two.uneven,
+  .form-grid,
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1080px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+  .main {
+    width: 100%;
+    padding: 20px;
+  }
+  .topbar {
+    position: static;
+    flex-direction: column;
+  }
+  .topbar-chips {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 820px) {
+  .hero-card,
+  .topbar,
+  .auth-card,
+  .pending-card,
+  .card {
+    padding: 18px;
+  }
+  .hero-card {
+    flex-direction: column;
+  }
+  .main,
+  .auth-shell,
+  .pending-shell {
+    padding: 16px;
+  }
+  .calendar-frame {
+    height: 520px;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="setup-banner hidden" id="setupBanner"></div>
+
+  <section class="auth-shell" id="authShell">
+    <div class="auth-backdrop"></div>
+    <div class="auth-card auth-brand-card">
+      <div class="brand-mark">HR</div>
+      <p class="eyebrow">Secure Internal Portal</p>
+      <h1>Harvest Renovation</h1>
+      <p class="muted auth-copy">Production-ready starter with secure login, approval workflow, company calendar, team calendar visibility, and profile security controls.</p>
+      <div class="auth-points">
+        <div class="auth-point"><strong>Approved access only</strong><span>New signups stay pending until admin approval.</span></div>
+        <div class="auth-point"><strong>Shared scheduling</strong><span>Embed one company Google Calendar plus employee calendars.</span></div>
+        <div class="auth-point"><strong>Password management</strong><span>Users can change passwords securely after login.</span></div>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth-view="login">Log in</button>
+        <button class="auth-tab" data-auth-view="signup">Request access</button>
+      </div>
+
+      <div class="auth-message hidden" id="authMessage"></div>
+
+      <form id="loginForm" class="auth-form active">
+        <p class="eyebrow">Portal Access</p>
+        <h2>Welcome back</h2>
+        <label><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span>Password</span><input type="password" name="password" autocomplete="current-password" required /></label>
+        <button type="submit" class="primary-btn full-width">Log in</button>
+      </form>
+
+      <form id="signupForm" class="auth-form hidden">
+        <p class="eyebrow">New employee access</p>
+        <h2>Create account request</h2>
+        <label><span>Full name</span><input type="text" name="full_name" autocomplete="name" required /></label>
+        <label><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span>Password</span><input type="password" name="password" autocomplete="new-password" minlength="10" required /></label>
+        <label><span>Confirm password</span><input type="password" name="confirm_password" autocomplete="new-password" minlength="10" required /></label>
+        <button type="submit" class="primary-btn full-width">Request account</button>
+        <p class="muted tiny">Standard new accounts enter pending review. Approved bootstrap emails can be auto-activated by database rules.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="pending-shell hidden" id="pendingShell">
+    <div class="pending-card">
+      <div class="brand-mark">HR</div>
+      <p class="eyebrow">Access review</p>
+      <h2 id="pendingTitle">Your account is pending approval</h2>
+      <p class="muted" id="pendingBody">An administrator needs to approve your account before you can access the portal.</p>
+      <div class="form-actions center">
+        <button class="ghost-btn" id="refreshProfileBtn" type="button">Refresh status</button>
+        <button class="danger-btn" id="logoutPendingBtn" type="button">Sign out</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell hidden" id="appShell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">HR</div>
+        <div>
+          <p class="eyebrow">Internal CRM + Calendar</p>
+          <h1>Harvest Renovation</h1>
+          <p class="muted">Approved employees only</p>
+        </div>
+      </div>
+
+      <div class="sidebar-profile">
+        <div>
+          <span class="profile-label">Signed in as</span>
+          <strong id="sidebarUserName">—</strong>
+          <p class="muted" id="sidebarUserMeta">—</p>
+        </div>
+        <span class="role-badge" id="sidebarRole">staff</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-btn" data-tab="company-calendar">Company Calendar</button>
+        <button class="nav-btn" data-tab="team-calendars">Team Calendars</button>
+        <button class="nav-btn" data-tab="settings">Settings</button>
+        <button class="nav-btn admin-only hidden" data-tab="admin">Admin Approval</button>
+      </nav>
+
+      <div class="sidebar-card compact">
+        <p class="eyebrow">How it works</p>
+        <ol class="mini-list">
+          <li>Employees sign up and wait for approval.</li>
+          <li>Admin approves or denies requests.</li>
+          <li>Approved users can see the company calendar.</li>
+          <li>Each employee can add a Google Calendar embed link.</li>
+          <li>Team calendars become visible to other approved employees.</li>
+        </ol>
+      </div>
+
+      <div class="sidebar-card compact">
+        <p class="eyebrow">Account</p>
+        <button class="ghost-btn full-width" id="openPasswordPanelBtn">Change password</button>
+        <button class="danger-btn full-width" id="logoutBtn">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Harvest Renovation Portal Pro</p>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p class="muted" id="pageSubtitle">Secure access, cleaner scheduling, and approval-based onboarding.</p>
+        </div>
+        <div class="topbar-chips">
+          <div class="chip"><span>Auth status</span><strong id="authStatusChip">Authenticated</strong></div>
+          <div class="chip"><span>Save state</span><strong id="saveStateChip">Connected</strong></div>
+          <div class="chip warm"><span>Company calendar</span><strong id="calendarStatusChip">Not configured</strong></div>
+        </div>
+      </header>
+
+      <section class="panel active" id="dashboard">
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">Operations Snapshot</p>
+            <h3>Secure team access plus shared scheduling in one clean workspace.</h3>
+            <p class="muted">This upgraded version focuses on real authentication, approval workflow, company calendar visibility, and employee calendar sharing instead of browser-only storage.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="primary-btn" data-open-tab="company-calendar">Open company calendar</button>
+            <button class="secondary-btn" data-open-tab="team-calendars">View team calendars</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="grid two">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Readiness</p>
+                <h3>Portal checklist</h3>
+              </div>
+            </div>
+            <div class="stack" id="readinessList"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Calendar sharing</p>
+                <h3>What employees need to do</h3>
+              </div>
+            </div>
+            <div class="stack" id="calendarGuide"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="company-calendar">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">Shared Calendar</p>
+              <h3>Company Google Calendar</h3>
+            </div>
+            <span class="badge" id="companyCalendarBadge">Awaiting setup</span>
+          </div>
+          <div id="companyCalendarWrap" class="calendar-embed-shell empty-state">Add the shared Google Calendar embed URL in configuration or in the admin portal settings.</div>
+        </article>
+      </section>
+
+      <section class="panel" id="team-calendars">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Shared visibility</p>
+                <h3>Employee calendars</h3>
+              </div>
+              <span class="badge">Approved employees only</span>
+            </div>
+            <div id="teamCalendarList" class="stack"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">How to connect</p>
+                <h3>Calendar sharing notes</h3>
+              </div>
+            </div>
+            <div class="stack">
+              <div class="feed-item"><strong>Option 1 — shared team view</strong><div class="muted">Each employee shares a Google Calendar and pastes the embed URL into their profile settings.</div></div>
+              <div class="feed-item"><strong>Option 2 — private org sharing</strong><div class="muted">Inside Google Calendar, share calendars with specific people in the company so approved staff can see each others schedules.</div></div>
+              <div class="feed-item"><strong>Best practice</strong><div class="muted">Use dedicated work calendars instead of personal private calendars when possible.</div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="settings">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Profile Settings</p>
+                <h3>Your portal profile</h3>
+              </div>
+            </div>
+            <form id="profileForm" class="form-grid">
+              <label><span>Full name</span><input type="text" name="full_name" required /></label>
+              <label><span>Email</span><input type="email" name="email" readonly /></label>
+              <label class="full"><span>Your Google Calendar embed URL</span><input type="url" name="google_calendar_embed_url" placeholder="https://calendar.google.com/calendar/embed?..." /></label>
+              <label class="full"><span>Calendar label</span><input type="text" name="calendar_label" placeholder="Juan calendar / Field schedule / Madelyn work calendar" /></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save profile</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card" id="passwordCard">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Security</p>
+                <h3>Change password</h3>
+              </div>
+            </div>
+            <form id="passwordForm" class="form-grid">
+              <label class="full"><span>New password</span><input type="password" name="password" minlength="10" autocomplete="new-password" required /></label>
+              <label class="full"><span>Confirm new password</span><input type="password" name="confirm_password" minlength="10" autocomplete="new-password" required /></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Update password</button>
+              </div>
+            </form>
+
+            <div class="admin-settings hidden" id="adminSettings">
+              <div class="section-divider"></div>
+              <div class="card-head tight">
+                <div>
+                  <p class="eyebrow">Admin Settings</p>
+                  <h3>Company calendar config</h3>
+                </div>
+              </div>
+              <form id="companyCalendarForm" class="form-grid">
+                <label class="full"><span>Company calendar name</span><input type="text" name="company_calendar_name" placeholder="Harvest Renovation Company Calendar" /></label>
+                <label class="full"><span>Company Google Calendar embed URL</span><input type="url" name="company_calendar_embed_url" placeholder="https://calendar.google.com/calendar/embed?..." /></label>
+                <div class="form-actions full">
+                  <button type="submit" class="secondary-btn">Save company calendar</button>
+                </div>
+              </form>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel admin-only hidden" id="admin">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Pending approvals</p>
+                <h3>Approve or deny access requests</h3>
+              </div>
+              <span class="badge" id="pendingBadge">0 pending</span>
+            </div>
+            <div id="pendingList" class="stack"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Admin notes</p>
+                <h3>Access policy</h3>
+              </div>
+            </div>
+            <div class="stack">
+              <div class="feed-item"><strong>Approved</strong><div class="muted">User gains full access to the app shell and calendar views.</div></div>
+              <div class="feed-item"><strong>Denied</strong><div class="muted">User remains blocked from the portal until manually changed later.</div></div>
+              <div class="feed-item"><strong>Bootstrap accounts</strong><div class="muted">Madelyn can be auto-approved as admin and Juan as active staff through the provided SQL trigger.</div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+window.PORTAL_CONFIG = {
+  supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+  supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
+  companyCalendarName: 'Harvest Renovation Company Calendar',
+  companyCalendarEmbedUrl: 'https://calendar.google.com/calendar/embed?src=YOUR_SHARED_CALENDAR_ID&ctz=America%2FChicago',
+  bootstrapUsers: [
+    {
+      email: 'contactmpuentes@gmail.com',
+      full_name: 'Madelyn Puentes',
+      role: 'admin',
+      autoApprove: true
+    },
+    {
+      email: 'Jpuentes1992@gmail.com',
+      full_name: 'Juan Puentes',
+      role: 'staff',
+      autoApprove: true
+    }
+  ]
+};
+
+</script>
+  <script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const config = window.PORTAL_CONFIG || {};
+const state = {
+  supabase: null,
+  session: null,
+  profile: null,
+  teamProfiles: [],
+  portalSettings: {
+    company_calendar_name: config.companyCalendarName || 'Harvest Renovation Company Calendar',
+    company_calendar_embed_url: config.companyCalendarEmbedUrl || ''
+  }
+};
+
+const el = {};
+
+function qs(id) {
+  return document.getElementById(id);
+}
+
+function qsa(selector, root = document) {
+  return Array.from(root.querySelectorAll(selector));
+}
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function showAuthMessage(message, type = 'info') {
+  el.authMessage.textContent = message;
+  el.authMessage.className = `auth-message ${type}`;
+  el.authMessage.classList.remove('hidden');
+}
+
+function clearAuthMessage() {
+  el.authMessage.className = 'auth-message hidden';
+  el.authMessage.textContent = '';
+}
+
+function updateSaveStateChip(text = 'Connected') {
+  if (el.saveStateChip) el.saveStateChip.textContent = text;
+}
+
+function setSetupBanner(message = '') {
+  if (!message) {
+    el.setupBanner.classList.add('hidden');
+    el.setupBanner.textContent = '';
+    return;
+  }
+  el.setupBanner.textContent = message;
+  el.setupBanner.classList.remove('hidden');
+}
+
+function openTab(tabId) {
+  qsa('.nav-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
+  qsa('.panel').forEach(panel => panel.classList.toggle('active', panel.id === tabId));
+  const titles = {
+    dashboard: ['Dashboard', 'Secure access, calendar visibility, and approval-based onboarding.'],
+    'company-calendar': ['Company Calendar', 'Shared Google Calendar embedded for approved staff.'],
+    'team-calendars': ['Team Calendars', 'See employee schedules and availability in one place.'],
+    settings: ['Settings', 'Manage your profile, calendar visibility, and password.'],
+    admin: ['Admin Approval', 'Approve or deny new user access requests.']
+  };
+  el.pageTitle.textContent = titles[tabId]?.[0] || 'Dashboard';
+  el.pageSubtitle.textContent = titles[tabId]?.[1] || '';
+}
+
+function setAuthView(view) {
+  qsa('.auth-tab').forEach(tab => tab.classList.toggle('active', tab.dataset.authView === view));
+  el.loginForm.classList.toggle('active', view === 'login');
+  el.signupForm.classList.toggle('active', view === 'signup');
+  el.loginForm.classList.toggle('hidden', view !== 'login');
+  el.signupForm.classList.toggle('hidden', view !== 'signup');
+  clearAuthMessage();
+}
+
+function showShell(shell) {
+  el.authShell.classList.add('hidden');
+  el.pendingShell.classList.add('hidden');
+  el.appShell.classList.add('hidden');
+  if (shell === 'auth') el.authShell.classList.remove('hidden');
+  if (shell === 'pending') el.pendingShell.classList.remove('hidden');
+  if (shell === 'app') el.appShell.classList.remove('hidden');
+}
+
+function formatDate(value) {
+  if (!value) return '—';
+  try {
+    return new Date(value).toLocaleString();
+  } catch {
+    return value;
+  }
+}
+
+function getRoleLabel(role = 'staff') {
+  return role.replace(/_/g, ' ');
+}
+
+function isAdmin() {
+  return state.profile?.role === 'admin' && state.profile?.status === 'active';
+}
+
+async function safeRpc(functionName, params = {}) {
+  const { data, error } = await state.supabase.rpc(functionName, params);
+  if (error) throw error;
+  return data;
+}
+
+async function bootstrap() {
+  captureElements();
+  bindBaseEvents();
+
+  const missingConfig = !config.supabaseUrl || !config.supabaseAnonKey;
+  if (missingConfig) {
+    setSetupBanner('Setup required: add your Supabase URL and anon key in config.js before using this portal.');
+    showAuthMessage('This bundle is production-ready, but it still needs your live Supabase project credentials in config.js.', 'info');
+    showShell('auth');
+    return;
+  }
+
+  state.supabase = createClient(config.supabaseUrl, config.supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    }
+  });
+
+  const { data: sessionData } = await state.supabase.auth.getSession();
+  state.session = sessionData.session;
+
+  state.supabase.auth.onAuthStateChange(async (_event, session) => {
+    state.session = session;
+    if (!session) {
+      state.profile = null;
+      showShell('auth');
+      return;
+    }
+    await loadAuthenticatedApp();
+  });
+
+  if (state.session) {
+    await loadAuthenticatedApp();
+  } else {
+    showShell('auth');
+  }
+}
+
+function captureElements() {
+  Object.assign(el, {
+    setupBanner: qs('setupBanner'),
+    authShell: qs('authShell'),
+    pendingShell: qs('pendingShell'),
+    appShell: qs('appShell'),
+    authMessage: qs('authMessage'),
+    loginForm: qs('loginForm'),
+    signupForm: qs('signupForm'),
+    pageTitle: qs('pageTitle'),
+    pageSubtitle: qs('pageSubtitle'),
+    sidebarUserName: qs('sidebarUserName'),
+    sidebarUserMeta: qs('sidebarUserMeta'),
+    sidebarRole: qs('sidebarRole'),
+    authStatusChip: qs('authStatusChip'),
+    saveStateChip: qs('saveStateChip'),
+    calendarStatusChip: qs('calendarStatusChip'),
+    statsGrid: qs('statsGrid'),
+    readinessList: qs('readinessList'),
+    calendarGuide: qs('calendarGuide'),
+    companyCalendarWrap: qs('companyCalendarWrap'),
+    companyCalendarBadge: qs('companyCalendarBadge'),
+    teamCalendarList: qs('teamCalendarList'),
+    profileForm: qs('profileForm'),
+    passwordForm: qs('passwordForm'),
+    companyCalendarForm: qs('companyCalendarForm'),
+    adminSettings: qs('adminSettings'),
+    pendingList: qs('pendingList'),
+    pendingBadge: qs('pendingBadge'),
+    pendingTitle: qs('pendingTitle'),
+    pendingBody: qs('pendingBody'),
+    refreshProfileBtn: qs('refreshProfileBtn'),
+    logoutPendingBtn: qs('logoutPendingBtn'),
+    logoutBtn: qs('logoutBtn')
+  });
+}
+
+function bindBaseEvents() {
+  qsa('.auth-tab').forEach(tab => tab.addEventListener('click', () => setAuthView(tab.dataset.authView)));
+  qsa('.nav-btn').forEach(btn => btn.addEventListener('click', () => openTab(btn.dataset.tab)));
+  qsa('[data-open-tab]').forEach(btn => btn.addEventListener('click', () => openTab(btn.dataset.openTab)));
+  qs('openPasswordPanelBtn').addEventListener('click', () => openTab('settings'));
+  el.refreshProfileBtn.addEventListener('click', async () => {
+    await loadAuthenticatedApp(true);
+  });
+  el.logoutPendingBtn.addEventListener('click', async () => {
+    if (!state.supabase) return;
+    await state.supabase.auth.signOut();
+  });
+  el.logoutBtn.addEventListener('click', async () => {
+    await state.supabase.auth.signOut();
+  });
+  el.loginForm.addEventListener('submit', handleLogin);
+  el.signupForm.addEventListener('submit', handleSignup);
+  el.profileForm.addEventListener('submit', handleProfileSave);
+  el.passwordForm.addEventListener('submit', handlePasswordChange);
+  el.companyCalendarForm.addEventListener('submit', handleCompanyCalendarSave);
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  clearAuthMessage();
+  const fd = new FormData(el.loginForm);
+  updateSaveStateChip('Signing in…');
+  const { error } = await state.supabase.auth.signInWithPassword({
+    email: fd.get('email'),
+    password: fd.get('password')
+  });
+  if (error) {
+    updateSaveStateChip('Auth error');
+    showAuthMessage(error.message, 'error');
+    return;
+  }
+  updateSaveStateChip('Authenticated');
+}
+
+async function handleSignup(event) {
+  event.preventDefault();
+  clearAuthMessage();
+  const fd = new FormData(el.signupForm);
+  const password = fd.get('password');
+  const confirmPassword = fd.get('confirm_password');
+  if (password !== confirmPassword) {
+    showAuthMessage('Passwords do not match.', 'error');
+    return;
+  }
+  if (String(password).length < 10) {
+    showAuthMessage('Password must be at least 10 characters.', 'error');
+    return;
+  }
+  updateSaveStateChip('Submitting request…');
+  const { data, error } = await state.supabase.auth.signUp({
+    email: fd.get('email'),
+    password,
+    options: {
+      data: {
+        full_name: fd.get('full_name')
+      }
+    }
+  });
+  if (error) {
+    updateSaveStateChip('Request failed');
+    showAuthMessage(error.message, 'error');
+    return;
+  }
+
+  const autoApprovedEmails = (config.bootstrapUsers || []).map(item => String(item.email || '').toLowerCase());
+  const isBootstrapEmail = autoApprovedEmails.includes(String(fd.get('email')).toLowerCase());
+  const msg = isBootstrapEmail
+    ? 'Account request submitted. This email is on the bootstrap list, so it should become active automatically when the database trigger is installed.'
+    : 'Account request created. An administrator must approve your access before you can enter the portal.';
+
+  updateSaveStateChip('Request created');
+  showAuthMessage(msg, 'success');
+  el.signupForm.reset();
+  setAuthView('login');
+  if (data?.session) await loadAuthenticatedApp(true);
+}
+
+async function loadAuthenticatedApp(forceRefresh = false) {
+  if (!state.session) {
+    showShell('auth');
+    return;
+  }
+
+  try {
+    state.profile = await fetchMyProfile();
+    if (!state.profile) {
+      showShell('auth');
+      showAuthMessage('Your profile is not available yet. If you just signed up, wait a few seconds and try again.', 'info');
+      return;
+    }
+
+    if (state.profile.status === 'pending') {
+      el.pendingTitle.textContent = 'Your account is pending approval';
+      el.pendingBody.textContent = 'An admin must approve your account before you can access the portal. Click refresh after you have been approved.';
+      showShell('pending');
+      return;
+    }
+
+    if (state.profile.status === 'denied') {
+      el.pendingTitle.textContent = 'Your account was denied';
+      el.pendingBody.textContent = 'This account is currently blocked. Contact the portal administrator if you need access restored.';
+      showShell('pending');
+      return;
+    }
+
+    await Promise.all([
+      loadTeamProfiles(),
+      loadPortalSettings(forceRefresh),
+      isAdmin() ? loadPendingUsers() : Promise.resolve([])
+    ]);
+
+    hydrateShell();
+    renderDashboard();
+    renderCompanyCalendar();
+    renderTeamCalendars();
+    renderPendingUsers();
+    showShell('app');
+    openTab('dashboard');
+    updateSaveStateChip('Synced');
+  } catch (error) {
+    console.error(error);
+    showAuthMessage(error.message || 'Something went wrong loading the portal.', 'error');
+    showShell('auth');
+  }
+}
+
+async function fetchMyProfile() {
+  const { data, error } = await state.supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', state.session.user.id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+async function loadTeamProfiles() {
+  const { data, error } = await state.supabase
+    .from('profiles')
+    .select('id,email,full_name,role,status,google_calendar_embed_url,calendar_label,created_at')
+    .eq('status', 'active')
+    .order('full_name', { ascending: true });
+  if (error) throw error;
+  state.teamProfiles = data || [];
+}
+
+async function loadPortalSettings(forceRefresh = false) {
+  if (!forceRefresh && !state.supabase) return;
+  const { data, error } = await state.supabase
+    .from('portal_settings')
+    .select('*')
+    .eq('id', 1)
+    .maybeSingle();
+  if (error) {
+    console.warn('portal_settings unavailable, using config fallback', error.message);
+    return;
+  }
+  if (data) {
+    state.portalSettings = {
+      company_calendar_name: data.company_calendar_name || state.portalSettings.company_calendar_name,
+      company_calendar_embed_url: data.company_calendar_embed_url || state.portalSettings.company_calendar_embed_url
+    };
+  }
+}
+
+async function loadPendingUsers() {
+  if (!isAdmin()) return [];
+  try {
+    state.pendingUsers = await safeRpc('list_pending_profiles');
+  } catch (error) {
+    console.warn('Pending users rpc unavailable', error.message);
+    state.pendingUsers = [];
+  }
+  return state.pendingUsers;
+}
+
+function hydrateShell() {
+  el.sidebarUserName.textContent = state.profile.full_name || state.profile.email || 'User';
+  el.sidebarUserMeta.textContent = `${state.profile.email} • ${state.profile.status}`;
+  el.sidebarRole.textContent = getRoleLabel(state.profile.role || 'staff');
+  el.authStatusChip.textContent = `${getRoleLabel(state.profile.role || 'staff')} • ${state.profile.status}`;
+  el.calendarStatusChip.textContent = state.portalSettings.company_calendar_embed_url ? 'Configured' : 'Not configured';
+
+  el.profileForm.full_name.value = state.profile.full_name || '';
+  el.profileForm.email.value = state.profile.email || state.session.user.email || '';
+  el.profileForm.google_calendar_embed_url.value = state.profile.google_calendar_embed_url || '';
+  el.profileForm.calendar_label.value = state.profile.calendar_label || '';
+
+  el.companyCalendarForm.company_calendar_name.value = state.portalSettings.company_calendar_name || '';
+  el.companyCalendarForm.company_calendar_embed_url.value = state.portalSettings.company_calendar_embed_url || '';
+
+  qsa('.admin-only').forEach(node => node.classList.toggle('hidden', !isAdmin()));
+  el.adminSettings.classList.toggle('hidden', !isAdmin());
+}
+
+function renderDashboard() {
+  const activeUsers = state.teamProfiles.length;
+  const teamCalendars = state.teamProfiles.filter(item => item.google_calendar_embed_url).length;
+  const stats = [
+    ['Approved Employees', activeUsers, 'Visible inside the portal'],
+    ['Team Calendars Added', teamCalendars, 'Employees sharing Google calendars'],
+    ['Company Calendar', state.portalSettings.company_calendar_embed_url ? 'Live' : 'Pending', 'Shared embed configuration'],
+    ['Admin Approval', isAdmin() ? `${(state.pendingUsers || []).length} pending` : 'Staff view', 'Approval dashboard access'],
+    ['Password Security', 'Enabled', 'Users can update their own password', true]
+  ];
+  el.statsGrid.innerHTML = stats.map(([label, value, note, warm]) => `
+    <article class="stat ${warm ? 'warm' : ''}">
+      <span class="label">${escapeHtml(label)}</span>
+      <strong class="value">${escapeHtml(String(value))}</strong>
+      <div class="muted">${escapeHtml(note)}</div>
+    </article>
+  `).join('');
+
+  const readinessItems = [
+    state.portalSettings.company_calendar_embed_url ? '✅ Shared company calendar is configured.' : '⚠️ Add the shared company calendar embed URL.',
+    state.profile.google_calendar_embed_url ? '✅ Your personal calendar is visible to approved employees.' : '⚠️ Add your own calendar embed URL in Settings to share availability.',
+    isAdmin() ? `${(state.pendingUsers || []).length} pending user request(s) ready for admin review.` : 'Staff users can view approved calendars once they are added.',
+    '✅ Password change is available in Settings.',
+    '✅ The app uses approval-gated login instead of browser-only local storage.'
+  ];
+  el.readinessList.innerHTML = readinessItems.map(item => `<div class="feed-item">${escapeHtml(item)}</div>`).join('');
+
+  const guideItems = [
+    'Open Google Calendar on desktop and choose the calendar you want to share.',
+    'Use calendar sharing or embed settings to generate the correct calendar link for your work calendar.',
+    'Paste that embed URL into your profile settings inside this portal.',
+    'Other approved employees will then be able to view your calendar here.',
+    'For cleaner operations, use dedicated work calendars instead of private personal calendars.'
+  ];
+  el.calendarGuide.innerHTML = guideItems.map(item => `<div class="feed-item">${escapeHtml(item)}</div>`).join('');
+}
+
+function renderCompanyCalendar() {
+  const url = state.portalSettings.company_calendar_embed_url;
+  const name = state.portalSettings.company_calendar_name || 'Company Calendar';
+  if (!url) {
+    el.companyCalendarBadge.textContent = 'Awaiting setup';
+    el.companyCalendarWrap.className = 'calendar-embed-shell empty-state';
+    el.companyCalendarWrap.innerHTML = 'Add the shared Google Calendar embed URL in configuration or in the admin portal settings.';
+    return;
+  }
+  el.companyCalendarBadge.textContent = name;
+  el.companyCalendarWrap.className = 'calendar-embed-shell';
+  el.companyCalendarWrap.innerHTML = `<iframe class="calendar-frame" src="${escapeHtml(url)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+}
+
+function renderTeamCalendars() {
+  if (!state.teamProfiles.length) {
+    el.teamCalendarList.innerHTML = '<div class="feed-item">No approved employees are available yet.</div>';
+    return;
+  }
+
+  const html = state.teamProfiles.map(profile => {
+    const mine = profile.id === state.profile.id;
+    const calendarLabel = profile.calendar_label || `${profile.full_name || profile.email} calendar`;
+    const statusText = profile.google_calendar_embed_url ? 'Calendar visible to team' : 'Calendar not added yet';
+    return `
+      <div class="calendar-card">
+        <div class="card-head tight">
+          <div>
+            <p class="eyebrow">${mine ? 'Your calendar' : 'Employee calendar'}</p>
+            <h3>${escapeHtml(profile.full_name || profile.email)}</h3>
+          </div>
+          <span class="badge">${escapeHtml(getRoleLabel(profile.role || 'staff'))}</span>
+        </div>
+        <div class="calendar-meta">
+          <div>${escapeHtml(calendarLabel)}</div>
+          <div>${escapeHtml(statusText)}</div>
+          <div>Joined ${escapeHtml(formatDate(profile.created_at))}</div>
+        </div>
+        ${profile.google_calendar_embed_url ? `<div class="form-actions"><button class="ghost-btn" data-toggle-calendar="${escapeHtml(profile.id)}">Show calendar</button></div><div class="calendar-slot hidden" id="calendar-slot-${escapeHtml(profile.id)}"><iframe class="calendar-frame" src="${escapeHtml(profile.google_calendar_embed_url)}" loading="lazy"></iframe></div>` : '<div class="feed-item" style="margin-top:12px;">This employee has not shared a Google Calendar embed link yet.</div>'}
+      </div>
+    `;
+  }).join('');
+
+  el.teamCalendarList.innerHTML = html;
+  qsa('[data-toggle-calendar]').forEach(button => {
+    button.addEventListener('click', () => {
+      const targetId = button.dataset.toggleCalendar;
+      const slot = qs(`calendar-slot-${targetId}`);
+      if (!slot) return;
+      const hidden = slot.classList.toggle('hidden');
+      button.textContent = hidden ? 'Show calendar' : 'Hide calendar';
+    });
+  });
+}
+
+function renderPendingUsers() {
+  if (!isAdmin()) return;
+  const pending = state.pendingUsers || [];
+  el.pendingBadge.textContent = `${pending.length} pending`;
+  if (!pending.length) {
+    el.pendingList.innerHTML = '<div class="feed-item">No pending requests right now.</div>';
+    return;
+  }
+  el.pendingList.innerHTML = pending.map(item => `
+    <div class="request-card">
+      <div class="form-actions" style="justify-content:space-between; align-items:flex-start;">
+        <div>
+          <strong>${escapeHtml(item.full_name || item.email)}</strong>
+          <div class="request-meta">
+            <span>${escapeHtml(item.email)}</span>
+            <span>Requested ${escapeHtml(formatDate(item.created_at))}</span>
+          </div>
+        </div>
+        <span class="status-pill pending">Pending</span>
+      </div>
+      <div class="form-actions">
+        <button class="primary-btn" data-review-user="approve:${escapeHtml(item.id)}">Approve</button>
+        <button class="danger-btn" data-review-user="deny:${escapeHtml(item.id)}">Deny</button>
+      </div>
+    </div>
+  `).join('');
+  qsa('[data-review-user]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const [decision, userId] = btn.dataset.reviewUser.split(':');
+      await reviewPendingUser(userId, decision);
+    });
+  });
+}
+
+async function reviewPendingUser(userId, decision) {
+  try {
+    updateSaveStateChip('Updating access…');
+    await safeRpc('review_user_request', {
+      p_user_id: userId,
+      p_decision: decision,
+      p_role: 'staff'
+    });
+    await loadPendingUsers();
+    await loadTeamProfiles();
+    renderDashboard();
+    renderPendingUsers();
+    renderTeamCalendars();
+    updateSaveStateChip('Access updated');
+  } catch (error) {
+    console.error(error);
+    updateSaveStateChip('Admin action failed');
+    alert(error.message || 'Unable to update user access.');
+  }
+}
+
+async function handleProfileSave(event) {
+  event.preventDefault();
+  try {
+    updateSaveStateChip('Saving profile…');
+    const fd = new FormData(el.profileForm);
+    const payload = {
+      p_full_name: fd.get('full_name'),
+      p_google_calendar_embed_url: fd.get('google_calendar_embed_url') || null,
+      p_calendar_label: fd.get('calendar_label') || null
+    };
+    await safeRpc('update_my_profile', payload);
+    state.profile = await fetchMyProfile();
+    await loadTeamProfiles();
+    hydrateShell();
+    renderDashboard();
+    renderTeamCalendars();
+    updateSaveStateChip('Profile saved');
+    alert('Profile updated.');
+  } catch (error) {
+    console.error(error);
+    updateSaveStateChip('Profile save failed');
+    alert(error.message || 'Unable to save your profile.');
+  }
+}
+
+async function handlePasswordChange(event) {
+  event.preventDefault();
+  const fd = new FormData(el.passwordForm);
+  const password = fd.get('password');
+  const confirmPassword = fd.get('confirm_password');
+  if (password !== confirmPassword) {
+    alert('Passwords do not match.');
+    return;
+  }
+  if (String(password).length < 10) {
+    alert('Use at least 10 characters for the new password.');
+    return;
+  }
+  try {
+    updateSaveStateChip('Updating password…');
+    const { error } = await state.supabase.auth.updateUser({ password });
+    if (error) throw error;
+    el.passwordForm.reset();
+    updateSaveStateChip('Password updated');
+    alert('Password updated successfully.');
+  } catch (error) {
+    console.error(error);
+    updateSaveStateChip('Password update failed');
+    alert(error.message || 'Unable to update password.');
+  }
+}
+
+async function handleCompanyCalendarSave(event) {
+  event.preventDefault();
+  if (!isAdmin()) return;
+  const fd = new FormData(el.companyCalendarForm);
+  try {
+    updateSaveStateChip('Saving company calendar…');
+    await safeRpc('update_company_calendar_settings', {
+      p_company_calendar_name: fd.get('company_calendar_name') || 'Harvest Renovation Company Calendar',
+      p_company_calendar_embed_url: fd.get('company_calendar_embed_url') || null
+    });
+    await loadPortalSettings(true);
+    hydrateShell();
+    renderDashboard();
+    renderCompanyCalendar();
+    updateSaveStateChip('Company calendar saved');
+    alert('Company calendar settings updated.');
+  } catch (error) {
+    console.error(error);
+    updateSaveStateChip('Calendar save failed');
+    alert(error.message || 'Unable to save company calendar settings.');
+  }
+}
+
+bootstrap();
+
+</script>
+</body>
+</html>

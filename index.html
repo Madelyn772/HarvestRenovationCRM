@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harvest Renovation Portal Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="setup-banner hidden" id="setupBanner"></div>
+
+  <section class="auth-shell" id="authShell">
+    <div class="auth-backdrop"></div>
+    <div class="auth-card auth-brand-card">
+      <div class="brand-mark">HR</div>
+      <p class="eyebrow">Secure Internal Portal</p>
+      <h1>Harvest Renovation</h1>
+      <p class="muted auth-copy">Production-ready starter with secure login, approval workflow, company calendar, team calendar visibility, and profile security controls.</p>
+      <div class="auth-points">
+        <div class="auth-point"><strong>Approved access only</strong><span>New signups stay pending until admin approval.</span></div>
+        <div class="auth-point"><strong>Shared scheduling</strong><span>Embed one company Google Calendar plus employee calendars.</span></div>
+        <div class="auth-point"><strong>Password management</strong><span>Users can change passwords securely after login.</span></div>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-auth-view="login">Log in</button>
+        <button class="auth-tab" data-auth-view="signup">Request access</button>
+      </div>
+
+      <div class="auth-message hidden" id="authMessage"></div>
+
+      <form id="loginForm" class="auth-form active">
+        <p class="eyebrow">Portal Access</p>
+        <h2>Welcome back</h2>
+        <label><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span>Password</span><input type="password" name="password" autocomplete="current-password" required /></label>
+        <button type="submit" class="primary-btn full-width">Log in</button>
+      </form>
+
+      <form id="signupForm" class="auth-form hidden">
+        <p class="eyebrow">New employee access</p>
+        <h2>Create account request</h2>
+        <label><span>Full name</span><input type="text" name="full_name" autocomplete="name" required /></label>
+        <label><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span>Password</span><input type="password" name="password" autocomplete="new-password" minlength="10" required /></label>
+        <label><span>Confirm password</span><input type="password" name="confirm_password" autocomplete="new-password" minlength="10" required /></label>
+        <button type="submit" class="primary-btn full-width">Request account</button>
+        <p class="muted tiny">Standard new accounts enter pending review. Approved bootstrap emails can be auto-activated by database rules.</p>
+      </form>
+    </div>
+  </section>
+
+  <section class="pending-shell hidden" id="pendingShell">
+    <div class="pending-card">
+      <div class="brand-mark">HR</div>
+      <p class="eyebrow">Access review</p>
+      <h2 id="pendingTitle">Your account is pending approval</h2>
+      <p class="muted" id="pendingBody">An administrator needs to approve your account before you can access the portal.</p>
+      <div class="form-actions center">
+        <button class="ghost-btn" id="refreshProfileBtn" type="button">Refresh status</button>
+        <button class="danger-btn" id="logoutPendingBtn" type="button">Sign out</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="shell hidden" id="appShell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">HR</div>
+        <div>
+          <p class="eyebrow">Internal CRM + Calendar</p>
+          <h1>Harvest Renovation</h1>
+          <p class="muted">Approved employees only</p>
+        </div>
+      </div>
+
+      <div class="sidebar-profile">
+        <div>
+          <span class="profile-label">Signed in as</span>
+          <strong id="sidebarUserName">—</strong>
+          <p class="muted" id="sidebarUserMeta">—</p>
+        </div>
+        <span class="role-badge" id="sidebarRole">staff</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
+        <button class="nav-btn" data-tab="company-calendar">Company Calendar</button>
+        <button class="nav-btn" data-tab="team-calendars">Team Calendars</button>
+        <button class="nav-btn" data-tab="settings">Settings</button>
+        <button class="nav-btn admin-only hidden" data-tab="admin">Admin Approval</button>
+      </nav>
+
+      <div class="sidebar-card compact">
+        <p class="eyebrow">How it works</p>
+        <ol class="mini-list">
+          <li>Employees sign up and wait for approval.</li>
+          <li>Admin approves or denies requests.</li>
+          <li>Approved users can see the company calendar.</li>
+          <li>Each employee can add a Google Calendar embed link.</li>
+          <li>Team calendars become visible to other approved employees.</li>
+        </ol>
+      </div>
+
+      <div class="sidebar-card compact">
+        <p class="eyebrow">Account</p>
+        <button class="ghost-btn full-width" id="openPasswordPanelBtn">Change password</button>
+        <button class="danger-btn full-width" id="logoutBtn">Log out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Harvest Renovation Portal Pro</p>
+          <h2 id="pageTitle">Dashboard</h2>
+          <p class="muted" id="pageSubtitle">Secure access, cleaner scheduling, and approval-based onboarding.</p>
+        </div>
+        <div class="topbar-chips">
+          <div class="chip"><span>Auth status</span><strong id="authStatusChip">Authenticated</strong></div>
+          <div class="chip"><span>Save state</span><strong id="saveStateChip">Connected</strong></div>
+          <div class="chip warm"><span>Company calendar</span><strong id="calendarStatusChip">Not configured</strong></div>
+        </div>
+      </header>
+
+      <section class="panel active" id="dashboard">
+        <div class="hero-card">
+          <div>
+            <p class="eyebrow">Operations Snapshot</p>
+            <h3>Secure team access plus shared scheduling in one clean workspace.</h3>
+            <p class="muted">This upgraded version focuses on real authentication, approval workflow, company calendar visibility, and employee calendar sharing instead of browser-only storage.</p>
+          </div>
+          <div class="hero-actions">
+            <button class="primary-btn" data-open-tab="company-calendar">Open company calendar</button>
+            <button class="secondary-btn" data-open-tab="team-calendars">View team calendars</button>
+          </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="grid two">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Readiness</p>
+                <h3>Portal checklist</h3>
+              </div>
+            </div>
+            <div class="stack" id="readinessList"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Calendar sharing</p>
+                <h3>What employees need to do</h3>
+              </div>
+            </div>
+            <div class="stack" id="calendarGuide"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="company-calendar">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">Shared Calendar</p>
+              <h3>Company Google Calendar</h3>
+            </div>
+            <span class="badge" id="companyCalendarBadge">Awaiting setup</span>
+          </div>
+          <div id="companyCalendarWrap" class="calendar-embed-shell empty-state">Add the shared Google Calendar embed URL in configuration or in the admin portal settings.</div>
+        </article>
+      </section>
+
+      <section class="panel" id="team-calendars">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Shared visibility</p>
+                <h3>Employee calendars</h3>
+              </div>
+              <span class="badge">Approved employees only</span>
+            </div>
+            <div id="teamCalendarList" class="stack"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">How to connect</p>
+                <h3>Calendar sharing notes</h3>
+              </div>
+            </div>
+            <div class="stack">
+              <div class="feed-item"><strong>Option 1 — shared team view</strong><div class="muted">Each employee shares a Google Calendar and pastes the embed URL into their profile settings.</div></div>
+              <div class="feed-item"><strong>Option 2 — private org sharing</strong><div class="muted">Inside Google Calendar, share calendars with specific people in the company so approved staff can see each others schedules.</div></div>
+              <div class="feed-item"><strong>Best practice</strong><div class="muted">Use dedicated work calendars instead of personal private calendars when possible.</div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="settings">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Profile Settings</p>
+                <h3>Your portal profile</h3>
+              </div>
+            </div>
+            <form id="profileForm" class="form-grid">
+              <label><span>Full name</span><input type="text" name="full_name" required /></label>
+              <label><span>Email</span><input type="email" name="email" readonly /></label>
+              <label class="full"><span>Your Google Calendar embed URL</span><input type="url" name="google_calendar_embed_url" placeholder="https://calendar.google.com/calendar/embed?..." /></label>
+              <label class="full"><span>Calendar label</span><input type="text" name="calendar_label" placeholder="Juan calendar / Field schedule / Madelyn work calendar" /></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save profile</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card" id="passwordCard">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Security</p>
+                <h3>Change password</h3>
+              </div>
+            </div>
+            <form id="passwordForm" class="form-grid">
+              <label class="full"><span>New password</span><input type="password" name="password" minlength="10" autocomplete="new-password" required /></label>
+              <label class="full"><span>Confirm new password</span><input type="password" name="confirm_password" minlength="10" autocomplete="new-password" required /></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Update password</button>
+              </div>
+            </form>
+
+            <div class="admin-settings hidden" id="adminSettings">
+              <div class="section-divider"></div>
+              <div class="card-head tight">
+                <div>
+                  <p class="eyebrow">Admin Settings</p>
+                  <h3>Company calendar config</h3>
+                </div>
+              </div>
+              <form id="companyCalendarForm" class="form-grid">
+                <label class="full"><span>Company calendar name</span><input type="text" name="company_calendar_name" placeholder="Harvest Renovation Company Calendar" /></label>
+                <label class="full"><span>Company Google Calendar embed URL</span><input type="url" name="company_calendar_embed_url" placeholder="https://calendar.google.com/calendar/embed?..." /></label>
+                <div class="form-actions full">
+                  <button type="submit" class="secondary-btn">Save company calendar</button>
+                </div>
+              </form>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel admin-only hidden" id="admin">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Pending approvals</p>
+                <h3>Approve or deny access requests</h3>
+              </div>
+              <span class="badge" id="pendingBadge">0 pending</span>
+            </div>
+            <div id="pendingList" class="stack"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Admin notes</p>
+                <h3>Access policy</h3>
+              </div>
+            </div>
+            <div class="stack">
+              <div class="feed-item"><strong>Approved</strong><div class="muted">User gains full access to the app shell and calendar views.</div></div>
+              <div class="feed-item"><strong>Denied</strong><div class="muted">User remains blocked from the portal until manually changed later.</div></div>
+              <div class="feed-item"><strong>Bootstrap accounts</strong><div class="muted">Madelyn can be auto-approved as admin and Juan as active staff through the provided SQL trigger.</div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
