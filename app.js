@@ -313,6 +313,10 @@ function escapeHtml(value = '') {
     .replace(/'/g, '&#039;');
 }
 
+function normalize(value = '') {
+  return String(value || '').trim().toLowerCase();
+}
+
 function showAuthMessage(message, type = 'info') {
   el.authMessage.textContent = message;
   el.authMessage.className = `auth-message ${type}`;
@@ -955,25 +959,19 @@ async function fetchMyProfile() {
 }
 
 async function loadTeamProfiles() {
-  const baseSelect = 'id,email,full_name,role,status,google_calendar_embed_url,calendar_label,created_at';
-  let { data, error } = await state.supabase
+  const { data, error } = await state.supabase
     .from('profiles')
-    .select(`${baseSelect},phone`)
+    .select('*')
     .eq('status', 'active')
-    .order('full_name', { ascending: true });
-
-  if (error) {
-    ({ data, error } = await state.supabase
-      .from('profiles')
-      .select(baseSelect)
-      .eq('status', 'active')
-      .order('full_name', { ascending: true }));
-  }
+    .order('email', { ascending: true });
   if (error) throw error;
-  state.teamProfiles = (data || []).map(profile => ({
-    ...profile,
-    phone: profile.phone || getStoredPhone(profile.id)
-  }));
+  state.teamProfiles = (data || [])
+    .map(profile => ({
+      ...profile,
+      full_name: profile.full_name || profile.fullName || profile.name || profile.email || 'User',
+      phone: profile.phone || getStoredPhone(profile.id)
+    }))
+    .sort((a, b) => String(a.full_name || '').localeCompare(String(b.full_name || ''), undefined, { sensitivity: 'base' }));
 }
 
 async function loadPortalSettings(forceRefresh = false) {
