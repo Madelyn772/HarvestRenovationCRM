@@ -659,7 +659,6 @@ async function safeRpc(functionName, params = {}) {
 async function bootstrap() {
   captureElements();
   bindBaseEvents();
-  initCrmFeatures();
 
   const publishableKey = config.supabasePublishableKey || config.supabaseAnonKey || '';
   const missingConfig = !config.supabaseUrl || !publishableKey;
@@ -678,6 +677,13 @@ async function bootstrap() {
     }
   });
 
+
+  try {
+    initCrmFeatures();
+  } catch (error) {
+    console.error(error);
+    showToast('CRM startup issue detected. Authentication is still available.', 'error');
+  }
   const { data: sessionData } = await state.supabase.auth.getSession();
   state.session = sessionData.session;
 
@@ -1498,6 +1504,16 @@ function addDaysISO(days) {
   const date = new Date();
   date.setDate(date.getDate() + days);
   return date.toISOString().slice(0, 10);
+}
+
+function currency(value) {
+  const amount = Number(value || 0);
+  return amount.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
 }
 
 function generateCode(prefix, existingCodes = []) {
