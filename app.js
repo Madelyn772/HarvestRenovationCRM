@@ -357,20 +357,37 @@ function bindDynamicTabLinks(root = document) {
 function shouldWarnUnsaved(targetTabId) {
   const next = targetTabId || '';
   if (state.allowTabSwitch) return false;
-  if (!hasUnsavedFormsInActivePanel()) return false;
+  if (!hasUnsavedFormsInCurrentView()) return false;
   const safeTargets = new Set(['settings', 'admin']);
   if (safeTargets.has(next) && state.currentTab === next) return false;
   return true;
 }
 
-function hasUnsavedFormsInActivePanel() {
+function hasUnsavedFormsInCurrentView() {
   if (state.unsavedForms.size === 0) return false;
+
+  const appVisible = !!el.appShell && !el.appShell.classList.contains('hidden');
+  const authVisible = !!el.authShell && !el.authShell.classList.contains('hidden');
+  const pendingVisible = !!el.pendingShell && !el.pendingShell.classList.contains('hidden');
+
   for (const formId of state.unsavedForms) {
     const form = qs(formId);
     if (!form) continue;
-    const panel = form.closest('.panel');
-    if (!panel || panel.classList.contains('active')) {
-      return true;
+
+    if (appVisible) {
+      const panel = form.closest('.panel');
+      if (panel?.classList.contains('active')) return true;
+      continue;
+    }
+
+    if (authVisible) {
+      if (form.closest('#authShell')) return true;
+      continue;
+    }
+
+    if (pendingVisible) {
+      if (form.closest('#pendingShell')) return true;
+      continue;
     }
   }
   return false;
@@ -860,7 +877,7 @@ function initUnsavedChangeTracking() {
   });
 
   window.addEventListener('beforeunload', event => {
-    if (state.unsavedForms.size === 0) return;
+    if (!hasUnsavedFormsInCurrentView()) return;
     event.preventDefault();
     event.returnValue = '';
   });
