@@ -1500,6 +1500,23 @@ function addDaysISO(days) {
   return date.toISOString().slice(0, 10);
 }
 
+function generateCode(prefix, existingCodes = []) {
+  const usedNumbers = new Set(
+    existingCodes
+      .map(code => String(code || '').trim())
+      .filter(code => code.startsWith(prefix))
+      .map(code => Number.parseInt(code.slice(prefix.length), 10))
+      .filter(Number.isFinite)
+  );
+
+  let nextNumber = 1000000;
+  while (usedNumbers.has(nextNumber)) {
+    nextNumber += 1;
+  }
+
+  return `${prefix}${String(nextNumber).padStart(7, '0')}`;
+}
+
 function duplicateClients({ name = '', phone = '', email = '' }) {
   const normalizedName = normalize(name);
   const normalizedPhone = normalize(phone);
