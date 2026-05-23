@@ -10,6 +10,7 @@ const state = {
   currentTab: 'dashboard',
   dashboardViewMode: 'admin',
   unsavedForms: new Set(),
+  suppressDirtyTracking: false,
   allowTabSwitch: false,
   teamProfiles: [],
   pendingUsers: [],
@@ -371,12 +372,22 @@ function confirmTabSwitch(targetTabId) {
 
 function markFormDirty(form) {
   if (!form?.id) return;
+  if (state.suppressDirtyTracking) return;
   state.unsavedForms.add(form.id);
 }
 
 function clearFormDirty(form) {
   if (!form?.id) return;
   state.unsavedForms.delete(form.id);
+}
+
+function withDirtyTrackingPaused(fn) {
+  state.suppressDirtyTracking = true;
+  try {
+    return fn();
+  } finally {
+    state.suppressDirtyTracking = false;
+  }
 }
 
 function setSetupBanner(message = '') {
@@ -2018,27 +2029,33 @@ function updateInvoiceTotal() {
 
 function resetEstimateForm() {
   const form = qs('estimateForm');
-  form.reset();
-  form.estimateId.value = '';
-  form.estimateNumber.value = generateCode('E', store.estimates.map(item => item.estimateNumber));
-  form.date.value = todayISO();
-  form.status.value = 'Draft';
-  form.depositPercent.value = 30;
-  form.laborPercent.value = 15;
-  form.finalPercent.value = 8;
-  qs('pricingMode').dispatchEvent(new Event('change'));
+  withDirtyTrackingPaused(() => {
+    form.reset();
+    form.estimateId.value = '';
+    form.estimateNumber.value = generateCode('E', store.estimates.map(item => item.estimateNumber));
+    form.date.value = todayISO();
+    form.status.value = 'Draft';
+    form.depositPercent.value = 30;
+    form.laborPercent.value = 15;
+    form.finalPercent.value = 8;
+    qs('pricingMode').dispatchEvent(new Event('change'));
+  });
+  clearFormDirty(form);
   renderEstimateSummary(null);
 }
 
 function resetInvoiceForm() {
   const form = qs('invoiceForm');
-  form.reset();
-  form.invoiceNumber.value = generateCode('V', store.invoices.map(item => item.invoiceNumber));
-  form.date.value = todayISO();
-  form.status.value = 'Draft';
-  qs('invoiceItems').innerHTML = '';
-  addInvoiceRow('Deposit', '0');
-  updateInvoiceTotal();
+  withDirtyTrackingPaused(() => {
+    form.reset();
+    form.invoiceNumber.value = generateCode('V', store.invoices.map(item => item.invoiceNumber));
+    form.date.value = todayISO();
+    form.status.value = 'Draft';
+    qs('invoiceItems').innerHTML = '';
+    addInvoiceRow('Deposit', '0');
+    updateInvoiceTotal();
+  });
+  clearFormDirty(form);
 }
 
 function softDeleteEntity(type, id, reason = 'Manual trash action') {
@@ -2561,24 +2578,27 @@ window.loadEstimateIntoForm = function(estimateId) {
   const record = findEstimateById(estimateId);
   if (!record) return;
   const form = qs('estimateForm');
-  form.estimateId.value = record.id;
-  form.clientId.value = record.clientId || '';
-  form.estimateNumber.value = record.estimateNumber;
-  form.date.value = record.date;
-  form.user.value = record.user;
-  form.trade.value = record.trade;
-  form.measurementType.value = record.measurementType;
-  form.rate.value = record.rate;
-  form.quantity.value = record.quantity;
-  form.materialCost.value = record.materialCost;
-  form.materialPercent.value = record.materialPercent;
-  form.pricingMode.value = record.pricingMode;
-  qs('pricingMode').dispatchEvent(new Event('change'));
-  form.laborPercent.value = record.laborPercent;
-  form.finalPercent.value = record.finalPercent;
-  form.depositPercent.value = record.depositPercent || 30;
-  form.scope.value = record.scope;
-  form.status.value = record.status;
+  withDirtyTrackingPaused(() => {
+    form.estimateId.value = record.id;
+    form.clientId.value = record.clientId || '';
+    form.estimateNumber.value = record.estimateNumber;
+    form.date.value = record.date;
+    form.user.value = record.user;
+    form.trade.value = record.trade;
+    form.measurementType.value = record.measurementType;
+    form.rate.value = record.rate;
+    form.quantity.value = record.quantity;
+    form.materialCost.value = record.materialCost;
+    form.materialPercent.value = record.materialPercent;
+    form.pricingMode.value = record.pricingMode;
+    qs('pricingMode').dispatchEvent(new Event('change'));
+    form.laborPercent.value = record.laborPercent;
+    form.finalPercent.value = record.finalPercent;
+    form.depositPercent.value = record.depositPercent || 30;
+    form.scope.value = record.scope;
+    form.status.value = record.status;
+  });
+  clearFormDirty(form);
   renderEstimateSummary(record);
   openTab('estimates');
 };
