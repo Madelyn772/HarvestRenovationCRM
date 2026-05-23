@@ -11,6 +11,7 @@
 </head>
 <body>
   <div class="setup-banner hidden" id="setupBanner"></div>
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
 
   <section class="auth-shell" id="authShell">
     <div class="auth-backdrop"></div>
@@ -73,7 +74,7 @@
       <div class="brand">
         <div class="brand-mark">HR</div>
         <div>
-          <p class="eyebrow">Internal CRM + Calendar</p>
+          <p class="eyebrow">Internal Portal</p>
           <h1>Harvest Renovation</h1>
           <p class="muted">Approved employees only</p>
         </div>
@@ -90,26 +91,35 @@
 
       <nav class="nav">
         <button class="nav-btn active" data-tab="dashboard">Dashboard</button>
-        <button class="nav-btn" data-tab="company-calendar">Company Calendar</button>
-        <button class="nav-btn" data-tab="team-calendars">Team Calendars</button>
-        <button class="nav-btn" data-tab="settings">Settings</button>
-        <button class="nav-btn admin-only hidden" data-tab="admin">Admin Approval</button>
+        <button class="nav-btn" data-tab="crm"><span>CRM</span><span class="nav-count" id="navCountCrm">0</span></button>
+        <button class="nav-btn" data-tab="estimating">Workflow</button>
+        <button class="nav-btn" data-tab="calendars"><span>Calendars</span><span class="nav-count" id="navCountCalendars">0</span></button>
+        <button class="nav-btn" data-tab="employees">Employees</button>
+        <button class="nav-btn admin-only hidden" data-tab="admin"><span>Admin</span><span class="nav-count" id="navCountAdmin">0</span></button>
       </nav>
+
+      <div class="sidebar-card">
+        <p class="eyebrow">Quick Actions</p>
+        <button class="ghost-btn" data-open-tab="clients">+ Add Client</button>
+        <button class="ghost-btn" data-open-tab="leads">+ Add Lead</button>
+        <button class="ghost-btn" data-open-tab="estimates">+ Build Estimate</button>
+        <button class="ghost-btn" data-open-tab="invoices">+ Create Invoice</button>
+      </div>
 
       <div class="sidebar-card compact">
         <p class="eyebrow">How it works</p>
         <ol class="mini-list">
-          <li>Employees sign up and wait for approval.</li>
-          <li>Admin approves or denies requests.</li>
-          <li>Approved users can see the company calendar.</li>
-          <li>Each employee can add a Google Calendar embed link.</li>
-          <li>Team calendars become visible to other approved employees.</li>
+          <li>Create or select a client.</li>
+          <li>Save a lead and build an estimate.</li>
+          <li>Convert approved estimates to invoices.</li>
+          <li>Schedule work and keep notes attached.</li>
+          <li>Employees can still share team calendars.</li>
         </ol>
       </div>
 
       <div class="sidebar-card compact">
         <p class="eyebrow">Account</p>
-        <button class="ghost-btn full-width" id="openPasswordPanelBtn">Change password</button>
+        <button class="ghost-btn full-width" id="openSettingsPanelBtn">Settings</button>
         <button class="danger-btn full-width" id="logoutBtn">Log out</button>
       </div>
     </aside>
@@ -118,7 +128,10 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Harvest Renovation Portal Pro</p>
-          <h2 id="pageTitle">Dashboard</h2>
+          <div class="topbar-title-row">
+            <h2 id="pageTitle">Dashboard</h2>
+            <button class="chip-toggle-inline admin-only hidden" id="dashboardViewToggleBtn" type="button">Staff View</button>
+          </div>
           <p class="muted" id="pageSubtitle">Secure access, cleaner scheduling, and approval-based onboarding.</p>
         </div>
         <div class="topbar-chips">
@@ -128,16 +141,19 @@
         </div>
       </header>
 
+      <div class="section-subnav hidden" id="sectionSubnav"></div>
+
       <section class="panel active" id="dashboard">
         <div class="hero-card">
           <div>
             <p class="eyebrow">Operations Snapshot</p>
-            <h3>Secure team access plus shared scheduling in one clean workspace.</h3>
-            <p class="muted">This upgraded version focuses on real authentication, approval workflow, company calendar visibility, and employee calendar sharing instead of browser-only storage.</p>
+            <h3>One place to run clients, estimates, projects, invoices, and team scheduling.</h3>
+            <p class="muted">This portal now combines approval-based access, company and team calendars, and the CRM workflow for leads, estimates, invoices, notes, and project tracking.</p>
           </div>
           <div class="hero-actions">
-            <button class="primary-btn" data-open-tab="company-calendar">Open company calendar</button>
-            <button class="secondary-btn" data-open-tab="team-calendars">View team calendars</button>
+            <button class="primary-btn" data-open-tab="clients" data-hero-target="crm">Start with Clients</button>
+            <button class="secondary-btn" data-open-tab="estimates" data-hero-target="estimating">Build Estimate</button>
+            <button class="ghost-btn" data-open-tab="company-calendar" data-hero-target="calendars">Company Calendar</button>
           </div>
         </div>
 
@@ -147,22 +163,427 @@
           <article class="card">
             <div class="card-head">
               <div>
-                <p class="eyebrow">Readiness</p>
-                <h3>Portal checklist</h3>
+                <p class="eyebrow">Today</p>
+                <h3>Priority checklist</h3>
               </div>
             </div>
-            <div class="stack" id="readinessList"></div>
+            <ul class="checklist" id="priorityChecklist"></ul>
           </article>
           <article class="card">
             <div class="card-head">
               <div>
-                <p class="eyebrow">Calendar sharing</p>
-                <h3>What employees need to do</h3>
+                <p class="eyebrow">Smart Additions</p>
+                <h3>What I recommend next</h3>
               </div>
             </div>
-            <div class="stack" id="calendarGuide"></div>
+            <div class="stack" id="recommendations"></div>
           </article>
         </div>
+
+        <div class="grid two">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Recent Activity</p>
+                <h3>Latest changes</h3>
+              </div>
+            </div>
+            <div class="stack" id="activityFeed"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Upcoming</p>
+                <h3>Calendar items</h3>
+              </div>
+            </div>
+            <div class="stack" id="upcomingFeed"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="clients">
+        <div class="grid sidebar-layout">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Client Database</p>
+                <h3>Create or update client</h3>
+              </div>
+              <span class="badge">Autofill source</span>
+            </div>
+            <form id="clientForm" class="form-grid">
+              <input type="hidden" name="clientId" />
+              <label><span>Client name</span><input name="name" list="clientNameList" required /></label>
+              <label><span>Phone</span><input name="phone" required /></label>
+              <label><span>Email</span><input name="email" type="email" /></label>
+              <label><span>Service area / ZIP</span><input name="serviceArea" placeholder="Houston / 77089" /></label>
+              <label class="full"><span>Address</span><input name="address" /></label>
+              <label><span>Referral source</span><input name="source" placeholder="Google, referral, repeat customer" /></label>
+              <label><span>Tags</span><input name="tags" placeholder="Repeat client, kitchen, electrical" /></label>
+              <label class="full"><span>Client notes</span><textarea name="notes" rows="4" placeholder="Preferences, gate code, project history, etc."></textarea></label>
+              <div class="alert hidden full" id="clientDuplicateAlert"></div>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save Client</button>
+                <button type="button" class="ghost-btn" id="clearClientForm">Clear</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="card-head split-head">
+              <div>
+                <p class="eyebrow">Saved Clients</p>
+                <h3>Search and open client record</h3>
+              </div>
+              <input id="clientSearch" class="search-input" placeholder="Search by name, phone, email, tag" />
+            </div>
+            <div id="clientList" class="stack"></div>
+          </article>
+
+          <article class="card detail-card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Client Detail</p>
+                <h3 id="clientDetailTitle">Select a client</h3>
+              </div>
+            </div>
+            <div id="clientDetailBody" class="detail-body empty-state">Choose a client to see linked leads, estimates, projects, invoices, and notes.</div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="leads">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Lead Intake</p>
+                <h3>Add lead</h3>
+              </div>
+              <span class="badge">Autofill from Clients</span>
+            </div>
+            <form id="leadForm" class="form-grid">
+              <label><span>Existing client</span><select name="clientId" id="leadClientSelect"></select></label>
+              <label><span>Client name</span><input name="clientName" list="clientNameList" required /></label>
+              <label><span>Phone</span><input name="phone" required /></label>
+              <label><span>Email</span><input name="email" type="email" /></label>
+              <label><span>Service</span>
+                <select name="service" required>
+                  <option>Kitchen Remodeling</option>
+                  <option>Bathroom Remodeling</option>
+                  <option>Flooring</option>
+                  <option>Painting</option>
+                  <option>Drywall / Framing / Electrical</option>
+                  <option>Full Home Renovation</option>
+                </select>
+              </label>
+              <label><span>Status</span>
+                <select name="status">
+                  <option>New</option>
+                  <option>Contacted</option>
+                  <option>Estimate Scheduled</option>
+                  <option>Estimate Sent</option>
+                  <option>Won</option>
+                  <option>Lost</option>
+                </select>
+              </label>
+              <label><span>Area / ZIP</span><input name="area" /></label>
+              <label><span>Preferred date</span><input name="preferredDate" type="date" /></label>
+              <label class="full"><span>Lead notes</span><textarea name="notes" rows="4"></textarea></label>
+              <div class="alert hidden full" id="leadDuplicateAlert"></div>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save Lead</button>
+                <button type="button" class="ghost-btn" id="clearLeadForm">Clear</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Lead Tracker</p>
+                <h3>Open leads and actions</h3>
+              </div>
+            </div>
+            <div id="leadTable"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="estimates">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Estimate Builder</p>
+                <h3>Template-driven estimate workflow</h3>
+              </div>
+              <span class="badge">Cleaner estimate screen</span>
+            </div>
+            <form id="estimateForm" class="form-grid">
+              <input type="hidden" name="estimateId" />
+              <label><span>Template</span>
+                <select name="templateKey" id="estimateTemplateSelect">
+                  <option value="">Choose template</option>
+                  <option value="Kitchen Remodeling">Kitchen Remodeling</option>
+                  <option value="Bathroom Remodeling">Bathroom Remodeling</option>
+                  <option value="Flooring">Flooring</option>
+                  <option value="Painting">Painting</option>
+                  <option value="Drywall / Framing / Electrical">Drywall / Framing / Electrical</option>
+                  <option value="Full Home Renovation">Full Home Renovation</option>
+                </select>
+              </label>
+              <label><span>Existing client</span><select name="clientId" id="estimateClientSelect"></select></label>
+              <label><span>Estimate number</span><input name="estimateNumber" id="estimateNumber" readonly /></label>
+              <label><span>Date</span><input name="date" id="estimateDate" type="date" /></label>
+              <label><span>Client name</span><input name="user" list="clientNameList" required /></label>
+              <label><span>Trade / service</span><input name="trade" required /></label>
+              <label><span>Measurement type</span>
+                <select name="measurementType">
+                  <option value="SquareFoot">Square Foot</option>
+                  <option value="LinearFoot">Linear Foot</option>
+                </select>
+              </label>
+              <label><span>Rate</span><input name="rate" type="number" step="0.01" min="0" required /></label>
+              <label><span>Quantity</span><input name="quantity" type="number" step="0.01" min="0" required /></label>
+              <label><span>Material cost</span><input name="materialCost" type="number" step="0.01" min="0" required /></label>
+              <label><span>Material cushion %</span><input name="materialPercent" type="number" step="0.01" min="0" required /></label>
+              <label><span>Pricing mode</span>
+                <select name="pricingMode" id="pricingMode">
+                  <option value="labor">Apply labor profit %</option>
+                  <option value="final">Apply final pay %</option>
+                </select>
+              </label>
+              <label id="laborPercentWrap"><span>Labor profit %</span><input name="laborPercent" type="number" step="0.01" min="0" value="15" /></label>
+              <label id="finalPercentWrap" class="hidden"><span>Final pay %</span><input name="finalPercent" type="number" step="0.01" min="0" value="8" /></label>
+              <label><span>Deposit %</span><input name="depositPercent" type="number" step="0.01" min="0" value="30" /></label>
+              <label><span>Status</span>
+                <select name="status">
+                  <option>Draft</option>
+                  <option>Sent</option>
+                  <option>Approved</option>
+                  <option>Rejected</option>
+                </select>
+              </label>
+              <label class="full"><span>Scope / description</span><textarea name="scope" rows="4"></textarea></label>
+              <div class="estimate-summary full" id="estimateSummary"></div>
+              <div class="form-actions full">
+                <button type="button" class="secondary-btn" id="calculateEstimate">Calculate</button>
+                <button type="submit" class="primary-btn">Save Estimate</button>
+                <button type="button" class="ghost-btn" id="printEstimate">Print</button>
+                <button type="button" class="ghost-btn" id="emailEstimate">Email Draft</button>
+                <button type="button" class="ghost-btn" id="clearEstimateForm">Clear</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Saved Estimates</p>
+                <h3>Reuse or convert to invoice</h3>
+              </div>
+            </div>
+            <div id="estimateList" class="stack"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="projects">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Production Setup</p>
+                <h3>Add project</h3>
+              </div>
+            </div>
+            <form id="jobForm" class="form-grid">
+              <label><span>Existing client</span><select name="clientId" id="jobClientSelect"></select></label>
+              <label><span>Client name</span><input name="client" list="clientNameList" required /></label>
+              <label><span>Service</span><input name="service" required /></label>
+              <label><span>Status</span>
+                <select name="status">
+                  <option>Estimate</option>
+                  <option>Scheduled</option>
+                  <option>In Progress</option>
+                  <option>On Hold</option>
+                  <option>Completed</option>
+                </select>
+              </label>
+              <label><span>Project value</span><input name="value" type="number" step="0.01" min="0" /></label>
+              <label><span>Start date</span><input name="startDate" type="date" /></label>
+              <label class="full"><span>Project notes</span><textarea name="notes" rows="4"></textarea></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save Project</button>
+                <button type="button" class="ghost-btn" id="clearJobForm">Clear</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Project Pipeline</p>
+                <h3>Production board</h3>
+              </div>
+            </div>
+            <div id="jobBoard" class="kanban"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="calendar">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Scheduling</p>
+                <h3>Add calendar item</h3>
+              </div>
+            </div>
+            <form id="calendarForm" class="form-grid">
+              <label><span>Existing client</span><select name="clientId" id="calendarClientSelect"></select></label>
+              <label><span>Title</span><input name="title" required /></label>
+              <label><span>Date</span><input name="date" type="date" required /></label>
+              <label><span>Type</span>
+                <select name="type">
+                  <option>Estimate Visit</option>
+                  <option>Job Start</option>
+                  <option>Material Pickup</option>
+                  <option>Final Walkthrough</option>
+                  <option>Invoice Follow-up</option>
+                </select>
+              </label>
+              <label><span>Related client</span><input name="client" list="clientNameList" /></label>
+              <label class="full"><span>Notes</span><textarea name="notes" rows="4"></textarea></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save Event</button>
+                <button type="button" class="ghost-btn" id="clearCalendarForm">Clear</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Upcoming Events</p>
+                <h3>Calendar list</h3>
+              </div>
+            </div>
+            <div id="calendarList" class="stack"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="documents">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Notes & Files</p>
+                <h3>Attach client notes and links</h3>
+              </div>
+            </div>
+            <form id="noteForm" class="form-grid">
+              <label><span>Existing client</span><select name="clientId" id="noteClientSelect"></select></label>
+              <label><span>Client / job</span><input name="title" list="clientNameList" required /></label>
+              <label><span>Category</span>
+                <select name="category">
+                  <option>Before Photos</option>
+                  <option>Progress Update</option>
+                  <option>Material Notes</option>
+                  <option>Client Communication</option>
+                  <option>Closeout</option>
+                </select>
+              </label>
+              <label><span>File link</span><input name="link" placeholder="Google Drive, Dropbox, photo album, etc." /></label>
+              <label class="full"><span>Note</span><textarea name="body" rows="5"></textarea></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save Note</button>
+                <button type="button" class="ghost-btn" id="clearNoteForm">Clear</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Saved Notes</p>
+                <h3>Files, links, and internal notes</h3>
+              </div>
+            </div>
+            <div id="noteList" class="stack"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="invoices">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Invoice Builder</p>
+                <h3>Print-ready and email-ready</h3>
+              </div>
+              <span class="badge">Create from estimate</span>
+            </div>
+            <form id="invoiceForm" class="form-grid">
+              <label><span>Existing client</span><select name="clientId" id="invoiceClientSelect"></select></label>
+              <label><span>Related estimate</span><select name="relatedEstimate" id="relatedEstimate"></select></label>
+              <label><span>Invoice number</span><input name="invoiceNumber" id="invoiceNumber" readonly /></label>
+              <label><span>Date</span><input name="date" id="invoiceDate" type="date" /></label>
+              <label><span>Client name</span><input name="clientName" list="clientNameList" required /></label>
+              <label><span>Status</span>
+                <select name="status">
+                  <option>Draft</option>
+                  <option>Sent</option>
+                  <option>Paid</option>
+                  <option>Past Due</option>
+                </select>
+              </label>
+              <label><span>Phone</span><input name="phone" /></label>
+              <label><span>Email</span><input name="email" type="email" /></label>
+              <label class="full"><span>Address</span><input name="address" /></label>
+              <label class="full"><span>Invoice items</span></label>
+              <div class="full" id="invoiceItems"></div>
+              <div class="form-actions full inline-left">
+                <button type="button" class="ghost-btn" id="addInvoiceRow">+ Add Line Item</button>
+              </div>
+              <div class="estimate-summary full" id="invoiceSummary"></div>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Save Invoice</button>
+                <button type="button" class="ghost-btn" id="printInvoice">Print</button>
+                <button type="button" class="ghost-btn" id="emailInvoice">Email Draft</button>
+                <button type="button" class="ghost-btn" id="clearInvoiceForm">Clear</button>
+              </div>
+            </form>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Invoice History</p>
+                <h3>Outstanding and saved invoices</h3>
+              </div>
+            </div>
+            <div id="invoiceList" class="stack"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" id="trash">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <p class="eyebrow">Safety Center</p>
+              <h3>Trash / Restore / Permanent Delete</h3>
+            </div>
+            <span class="badge">Soft delete enabled</span>
+          </div>
+          <div id="trashList" class="stack"></div>
+        </article>
       </section>
 
       <section class="panel" id="company-calendar">
@@ -206,6 +627,34 @@
         </div>
       </section>
 
+      <section class="panel" id="employees">
+        <div class="grid two uneven">
+          <article class="card">
+            <div class="card-head split-head">
+              <div>
+                <p class="eyebrow">Team Directory</p>
+                <h3>Active employees and contacts</h3>
+              </div>
+              <input id="employeeSearch" class="search-input" placeholder="Search name, email, role" />
+            </div>
+            <div id="employeeList" class="stack"></div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <p class="eyebrow">Contact Tips</p>
+                <h3>Use internal contact details</h3>
+              </div>
+            </div>
+            <div class="stack">
+              <div class="feed-item"><strong>Email links</strong><div class="muted">Tap an email to open your default mail app and message a coworker quickly.</div></div>
+              <div class="feed-item"><strong>Phone visibility</strong><div class="muted">Phone appears only when the employee adds it in Settings.</div></div>
+              <div class="feed-item"><strong>Directory access</strong><div class="muted">Only active employees appear in the internal directory.</div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <section class="panel" id="settings">
         <div class="grid two uneven">
           <article class="card">
@@ -218,6 +667,7 @@
             <form id="profileForm" class="form-grid">
               <label><span>Full name</span><input type="text" name="full_name" required /></label>
               <label><span>Email</span><input type="email" name="email" readonly /></label>
+              <label><span>Phone number</span><input type="tel" name="phone" placeholder="(832) 555-1234" /></label>
               <label class="full"><span>Your Google Calendar embed URL</span><input type="url" name="google_calendar_embed_url" placeholder="https://calendar.google.com/calendar/embed?..." /></label>
               <label class="full"><span>Calendar label</span><input type="text" name="calendar_label" placeholder="Juan calendar / Field schedule / Madelyn work calendar" /></label>
               <div class="form-actions full">
@@ -264,15 +714,55 @@
       <section class="panel admin-only hidden" id="admin">
         <div class="grid two uneven">
           <article class="card">
+            <div class="admin-view-toolbar">
+              <div class="form-actions admin-view-switch" role="tablist" aria-label="Admin view switch">
+                <button type="button" class="ghost-btn admin-view-btn active" id="showPendingApprovalsBtn" aria-pressed="true">Pending</button>
+                <button type="button" class="ghost-btn admin-view-btn" id="openUserDirectoryBtn" aria-pressed="false">Users</button>
+              </div>
+              <span class="badge admin-view-label" id="adminViewModeLabel">Viewing pending approvals</span>
+            </div>
+
+            <div id="adminPendingView">
+              <div class="card-head">
+                <div>
+                  <p class="eyebrow">Pending approvals</p>
+                  <h3>Approve or deny access requests</h3>
+                </div>
+                <span class="badge" id="pendingBadge">0 pending</span>
+              </div>
+              <div id="pendingList" class="stack"></div>
+            </div>
+
+            <div id="adminUserView" class="hidden">
+              <div class="card-head">
+                <div>
+                  <p class="eyebrow">User Directory</p>
+                  <h3>Review active users</h3>
+                </div>
+                <span class="badge" id="adminUserBadge">0 active</span>
+              </div>
+              <div class="stack" id="adminUserList"></div>
+            </div>
+          </article>
+          <article class="card">
             <div class="card-head">
               <div>
-                <p class="eyebrow">Pending approvals</p>
-                <h3>Approve or deny access requests</h3>
+                <p class="eyebrow">Grant Access</p>
+                <h3>Create and approve user</h3>
               </div>
-              <span class="badge" id="pendingBadge">0 pending</span>
             </div>
-            <div id="pendingList" class="stack"></div>
+            <form id="adminGrantAccessForm" class="form-grid">
+              <label><span>Full name</span><input type="text" name="full_name" required /></label>
+              <label><span>Email</span><input type="email" name="email" required /></label>
+              <label><span>Password</span><input type="password" name="password" minlength="10" required /></label>
+              <label><span>Phone number (optional)</span><input type="tel" name="phone" placeholder="(832) 555-1234" /></label>
+              <div class="form-actions full">
+                <button type="submit" class="primary-btn">Grant Access</button>
+              </div>
+            </form>
           </article>
+        </div>
+        <div class="grid" style="margin-top: 18px;">
           <article class="card">
             <div class="card-head">
               <div>
@@ -283,6 +773,7 @@
             <div class="stack">
               <div class="feed-item"><strong>Approved</strong><div class="muted">User gains full access to the app shell and calendar views.</div></div>
               <div class="feed-item"><strong>Denied</strong><div class="muted">User remains blocked from the portal until manually changed later.</div></div>
+              <div class="feed-item"><strong>Deactivated</strong><div class="muted">Set a user status to denied when you need to disable access after review.</div></div>
               <div class="feed-item"><strong>Bootstrap accounts</strong><div class="muted">Madelyn can be auto-approved as admin and Juan as active staff through the provided SQL trigger.</div></div>
             </div>
           </article>
@@ -290,6 +781,16 @@
       </section>
     </main>
   </div>
+
+  <datalist id="clientNameList"></datalist>
+
+  <template id="invoiceRowTemplate">
+    <div class="invoice-row">
+      <input class="desc" placeholder="Description" />
+      <input class="amount" type="number" min="0" step="0.01" placeholder="0.00" />
+      <button type="button" class="danger-btn remove-invoice-row">Remove</button>
+    </div>
+  </template>
 
   <script type="module" src="./app.js"></script>
 </body>

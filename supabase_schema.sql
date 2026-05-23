@@ -7,6 +7,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   email text not null unique,
   full_name text,
+  phone text,
   role text not null default 'staff' check (role in ('admin','staff')),
   status text not null default 'pending' check (status in ('pending','active','denied')),
   google_calendar_embed_url text,
@@ -16,6 +17,9 @@ create table if not exists public.profiles (
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
+
+alter table public.profiles
+add column if not exists phone text;
 
 create table if not exists public.portal_settings (
   id integer primary key,
@@ -137,7 +141,8 @@ using (public.is_active_user());
 create or replace function public.update_my_profile(
   p_full_name text,
   p_google_calendar_embed_url text,
-  p_calendar_label text
+  p_calendar_label text,
+  p_phone text default null
 )
 returns public.profiles
 language plpgsql
@@ -149,6 +154,7 @@ declare
 begin
   update public.profiles
   set full_name = nullif(trim(p_full_name), ''),
+      phone = nullif(trim(p_phone), ''),
       google_calendar_embed_url = nullif(trim(p_google_calendar_embed_url), ''),
       calendar_label = nullif(trim(p_calendar_label), '')
   where id = auth.uid()
@@ -222,6 +228,35 @@ begin
 end;
 $$;
 
+create or replace function public.set_user_phone(
+  p_user_id uuid,
+  p_phone text
+)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  updated_profile public.profiles;
+begin
+  if not public.is_admin_user() then
+    raise exception 'Only admins can set user phone values';
+  end if;
+
+  update public.profiles
+  set phone = nullif(trim(p_phone), '')
+  where id = p_user_id
+  returning * into updated_profile;
+
+  if updated_profile.id is null then
+    raise exception 'User profile not found';
+  end if;
+
+  return updated_profile;
+end;
+$$;
+
 create or replace function public.update_company_calendar_settings(
   p_company_calendar_name text,
   p_company_calendar_embed_url text
@@ -259,7 +294,8 @@ grant select on public.profiles to authenticated;
 grant select on public.portal_settings to authenticated;
 grant execute on function public.is_active_user() to authenticated;
 grant execute on function public.is_admin_user() to authenticated;
-grant execute on function public.update_my_profile(text, text, text) to authenticated;
+grant execute on function public.update_my_profile(text, text, text, text) to authenticated;
 grant execute on function public.list_pending_profiles() to authenticated;
 grant execute on function public.review_user_request(uuid, text, text) to authenticated;
+grant execute on function public.set_user_phone(uuid, text) to authenticated;
 grant execute on function public.update_company_calendar_settings(text, text) to authenticated;
