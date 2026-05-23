@@ -84,9 +84,11 @@
         <div>
           <div class="profile-heading">
             <span class="profile-label">Signed in as</span>
+          </div>
+          <div class="profile-name-row">
+            <strong id="sidebarUserName">—</strong>
             <span class="role-badge" id="sidebarRole">staff</span>
           </div>
-          <strong id="sidebarUserName">—</strong>
           <p class="muted" id="sidebarUserMeta">—</p>
         </div>
       </div>
@@ -714,16 +716,16 @@
       </section>
 
       <section class="panel admin-only hidden" id="admin">
-        <div class="grid two uneven">
-          <article class="card">
-            <div class="admin-view-toolbar">
-              <div class="form-actions admin-view-switch" role="tablist" aria-label="Admin view switch">
-                <button type="button" class="ghost-btn admin-view-btn active" id="showPendingApprovalsBtn" aria-pressed="true">Pending</button>
-                <button type="button" class="ghost-btn admin-view-btn" id="openUserDirectoryBtn" aria-pressed="false">Users</button>
-              </div>
-              <span class="badge admin-view-label" id="adminViewModeLabel">Viewing pending approvals</span>
-            </div>
+        <div class="admin-view-toolbar">
+          <div class="admin-view-switch" role="tablist" aria-label="Admin view switch">
+            <button type="button" class="ghost-btn admin-view-btn active" id="showPendingApprovalsBtn" aria-pressed="true">Pending</button>
+            <button type="button" class="ghost-btn admin-view-btn" id="openUserDirectoryBtn" aria-pressed="false">Users</button>
+          </div>
+          <span class="badge admin-view-label" id="adminViewModeLabel">Viewing pending approvals</span>
+        </div>
 
+        <div class="grid two uneven">
+          <article class="card" id="adminPendingCard">
             <div id="adminPendingView">
               <div class="card-head">
                 <div>
@@ -734,8 +736,10 @@
               </div>
               <div id="pendingList" class="stack"></div>
             </div>
+          </article>
 
-            <div id="adminUserView" class="hidden">
+          <article class="card hidden" id="adminUsersCard">
+            <div id="adminUserView">
               <div class="card-head">
                 <div>
                   <p class="eyebrow">User Directory</p>
@@ -746,7 +750,7 @@
               <div class="stack" id="adminUserList"></div>
             </div>
           </article>
-          <article class="card">
+          <article class="card" id="adminGrantCard">
             <div class="card-head">
               <div>
                 <p class="eyebrow">Grant Access</p>

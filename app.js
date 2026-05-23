@@ -357,10 +357,23 @@ function bindDynamicTabLinks(root = document) {
 function shouldWarnUnsaved(targetTabId) {
   const next = targetTabId || '';
   if (state.allowTabSwitch) return false;
-  if (state.unsavedForms.size === 0) return false;
+  if (!hasUnsavedFormsInActivePanel()) return false;
   const safeTargets = new Set(['settings', 'admin']);
   if (safeTargets.has(next) && state.currentTab === next) return false;
   return true;
+}
+
+function hasUnsavedFormsInActivePanel() {
+  if (state.unsavedForms.size === 0) return false;
+  for (const formId of state.unsavedForms) {
+    const form = qs(formId);
+    if (!form) continue;
+    const panel = form.closest('.panel');
+    if (!panel || panel.classList.contains('active')) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function confirmTabSwitch(targetTabId) {
@@ -661,6 +674,19 @@ function getRoleLabel(role = 'staff') {
   return role.replace(/_/g, ' ');
 }
 
+function getEffectiveUserStatus(profile = {}) {
+  const accountStatus = String(profile.status || 'active').toLowerCase();
+  if (accountStatus !== 'active') return accountStatus;
+  const currentUserId = state.session?.user?.id || state.profile?.id || '';
+  if (!currentUserId) return 'offline';
+  return profile.id === currentUserId ? 'active' : 'offline';
+}
+
+function formatStatusLabel(status = 'offline') {
+  const normalized = String(status || 'offline').toLowerCase();
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
 function isAdmin() {
   return state.profile?.role === 'admin' && state.profile?.status === 'active';
 }
@@ -756,6 +782,9 @@ function captureElements() {
     pendingList: qs('pendingList'),
     pendingBadge: qs('pendingBadge'),
     openUserDirectoryBtn: qs('openUserDirectoryBtn'),
+    adminPendingCard: qs('adminPendingCard'),
+    adminUsersCard: qs('adminUsersCard'),
+    adminGrantCard: qs('adminGrantCard'),
     adminPendingView: qs('adminPendingView'),
     adminUserView: qs('adminUserView'),
     showPendingApprovalsBtn: qs('showPendingApprovalsBtn'),
@@ -819,8 +848,14 @@ function bindBaseEvents() {
 
 function initUnsavedChangeTracking() {
   qsa('form').forEach(form => {
-    form.addEventListener('input', () => markFormDirty(form));
-    form.addEventListener('change', () => markFormDirty(form));
+    form.addEventListener('input', event => {
+      if (!event.isTrusted) return;
+      markFormDirty(form);
+    });
+    form.addEventListener('change', event => {
+      if (!event.isTrusted) return;
+      markFormDirty(form);
+    });
     form.addEventListener('submit', () => clearFormDirty(form));
   });
 
@@ -1017,7 +1052,9 @@ async function loadPendingUsers() {
 
 function hydrateShell() {
   el.sidebarUserName.textContent = state.profile.full_name || state.profile.email || 'User';
-  el.sidebarUserMeta.textContent = `${state.profile.email} • ${state.profile.status}`;
+  const profileEmail = escapeHtml(state.profile.email || '');
+  const profileStatus = escapeHtml(state.profile.status || 'active');
+  el.sidebarUserMeta.innerHTML = `<span class="meta-email">${profileEmail}</span><span class="meta-status-line">• ${profileStatus}</span>`;
   el.sidebarRole.textContent = getRoleLabel(state.profile.role || 'staff');
   el.authStatusChip.textContent = `${getRoleLabel(state.profile.role || 'staff')} • ${state.profile.status}`;
   el.calendarStatusChip.textContent = state.portalSettings.company_calendar_embed_url ? 'Configured' : 'Not configured';
@@ -1211,8 +1248,9 @@ function renderPendingUsers() {
 
 function setAdminPrimaryView(view = 'pending') {
   const isUsersView = view === 'users';
-  if (el.adminPendingView) el.adminPendingView.classList.toggle('hidden', isUsersView);
-  if (el.adminUserView) el.adminUserView.classList.toggle('hidden', !isUsersView);
+  if (el.adminPendingCard) el.adminPendingCard.classList.toggle('hidden', isUsersView);
+  if (el.adminUsersCard) el.adminUsersCard.classList.toggle('hidden', !isUsersView);
+  if (el.adminGrantCard) el.adminGrantCard.classList.toggle('hidden', isUsersView);
   if (el.openUserDirectoryBtn) {
     el.openUserDirectoryBtn.classList.toggle('active', isUsersView);
     el.openUserDirectoryBtn.setAttribute('aria-pressed', String(isUsersView));
@@ -1238,14 +1276,27 @@ function renderAdminUsers() {
 
   el.adminUserList.innerHTML = users.map(user => {
     const isSelf = user.id === state.profile.id;
+    const roleValue = String(user.role || 'staff').toLowerCase() === 'admin' ? 'admin' : 'staff';
+    const effectiveStatus = getEffectiveUserStatus(user);
+    const statusClass = ['active', 'pending', 'denied', 'offline'].includes(effectiveStatus) ? effectiveStatus : 'offline';
+    const statusText = formatStatusLabel(effectiveStatus);
     return `
       <div class="user-card">
         <div>
           <strong>${escapeHtml(user.full_name || user.email)}</strong>
           <div class="user-meta">
             <div>${escapeHtml(user.email || '')}</div>
-            <div>Role: ${escapeHtml(getRoleLabel(user.role || 'staff'))}</div>
-            <div>Status: ${escapeHtml(user.status || 'active')}</div>
+            <div>
+              Role:
+              <span class="admin-user-role-control">
+                <select id="adminRoleSelect-${escapeHtml(user.id)}" class="admin-role-select" ${isSelf ? 'disabled' : ''}>
+                  <option value="staff" ${roleValue === 'staff' ? 'selected' : ''}>Staff</option>
+                  <option value="admin" ${roleValue === 'admin' ? 'selected' : ''}>Admin</option>
+                </select>
+                <button type="button" class="ghost-btn role-save-btn" data-save-user-role="${escapeHtml(user.id)}" ${isSelf ? 'disabled' : ''}>Save role</button>
+              </span>
+            </div>
+            <div>Status: <span class="user-status-line ${statusClass}">${escapeHtml(statusText)}</span></div>
             <div>Joined ${escapeHtml(formatDate(user.created_at))}</div>
           </div>
         </div>
@@ -1262,6 +1313,48 @@ function renderAdminUsers() {
       await deactivateUser(userId);
     });
   });
+
+  qsa('[data-save-user-role]').forEach(button => {
+    button.addEventListener('click', async () => {
+      const userId = button.dataset.saveUserRole;
+      const select = qs(`adminRoleSelect-${userId}`);
+      const nextRole = String(select?.value || '').trim().toLowerCase();
+      if (!nextRole) return;
+      await updateUserRole(userId, nextRole);
+    });
+  });
+}
+
+async function updateUserRole(userId, nextRole) {
+  if (!isAdmin() || !userId) return;
+  if (userId === state.profile?.id) {
+    showToast('Use another admin account to change your own role.', 'error');
+    return;
+  }
+  if (!['staff', 'admin'].includes(nextRole)) {
+    showToast('Invalid role selected.', 'error');
+    return;
+  }
+
+  try {
+    updateSaveStateChip('Updating role…');
+    const { error } = await state.supabase
+      .from('profiles')
+      .update({ role: nextRole })
+      .eq('id', userId);
+    if (error) throw error;
+
+    await loadTeamProfiles();
+    renderTeamCalendars();
+    renderEmployees();
+    renderAdminUsers();
+    updateSaveStateChip('Role updated');
+    showToast('User role updated successfully.', 'success');
+  } catch (error) {
+    console.error(error);
+    updateSaveStateChip('Role update failed');
+    showToast(error.message || 'Unable to update this user role.', 'error');
+  }
 }
 
 async function deactivateUser(userId) {
@@ -1884,13 +1977,16 @@ function renderEmployees() {
       const fullName = profile.full_name || profile.email;
       const email = profile.email || '';
       const phone = profile.phone || getStoredPhone(profile.id) || '';
+      const effectiveStatus = getEffectiveUserStatus(profile);
+      const statusClass = ['active', 'pending', 'denied', 'offline'].includes(effectiveStatus) ? effectiveStatus : 'offline';
+      const statusLabel = formatStatusLabel(effectiveStatus);
       return `
         <div class="user-card">
           <div>
             <strong>${escapeHtml(fullName)}</strong>
             <div class="user-meta">
               <div>Role: ${escapeHtml(getRoleLabel(profile.role || 'staff'))}</div>
-              <div>Status: ${escapeHtml(profile.status || 'active')}</div>
+              <div>Status: <span class="user-status-line ${statusClass}">${escapeHtml(statusLabel)}</span></div>
             </div>
           </div>
           <div class="form-actions">
