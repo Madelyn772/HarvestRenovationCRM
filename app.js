@@ -1531,6 +1531,32 @@ function generateCode(prefix, existingCodes = []) {
   return `${prefix}${String(nextNumber).padStart(7, '0')}`;
 }
 
+function createId(prefix = 'ID') {
+  const randomPart = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `${prefix}-${Date.now().toString(36).toUpperCase()}${randomPart}`;
+}
+
+function addActivity(text, meta = 'System') {
+  if (!store?.activity || !Array.isArray(store.activity)) return;
+  store.activity.unshift({
+    id: createId('A'),
+    text,
+    meta,
+    date: todayISO()
+  });
+  if (store.activity.length > 200) {
+    store.activity = store.activity.slice(0, 200);
+  }
+}
+
+function findClientById(clientId) {
+  return store.clients.find(item => item.id === clientId) || null;
+}
+
+function findEstimateById(estimateId) {
+  return store.estimates.find(item => item.id === estimateId) || null;
+}
+
 function duplicateClients({ name = '', phone = '', email = '' }) {
   const normalizedName = normalize(name);
   const normalizedPhone = normalize(phone);
